@@ -62,10 +62,12 @@ const styles = StyleSheet.create({
     color: colors.inkSoft,
     textAlign: 'center',
     marginTop: spacing.lg,
-    maxWidth: 320,
+    maxWidth: 420,
   },
   actions: {
     width: '100%',
+    maxWidth: 480,
+    alignSelf: 'center',
   },
   footnote: {
     ...typography.caption,

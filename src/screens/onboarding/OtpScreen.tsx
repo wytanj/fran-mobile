@@ -17,12 +17,14 @@ import { signupDraft } from './NameScreen';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Otp'>;
 
+const OTP_LENGTH = 4;
 const RESEND_SECONDS = 30;
+const emptyOtp = () => Array.from({ length: OTP_LENGTH }, () => '');
 
 export function OtpScreen({ navigation, route }: Props) {
   const { mode, phone } = route.params;
   const { signIn } = useUser();
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(emptyOtp);
   const [error, setError] = useState('');
   const [seconds, setSeconds] = useState(RESEND_SECONDS);
   const [loading, setLoading] = useState(false);
@@ -37,12 +39,26 @@ export function OtpScreen({ navigation, route }: Props) {
   const code = otp.join('');
 
   const onChangeDigit = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, '').slice(-1);
+    // Support paste of full code into any box
+    const digits = value.replace(/\D/g, '');
+    if (digits.length > 1) {
+      const next = emptyOtp();
+      for (let i = 0; i < OTP_LENGTH; i++) {
+        next[i] = digits[i] ?? '';
+      }
+      setOtp(next);
+      setError('');
+      const focusAt = Math.min(digits.length, OTP_LENGTH) - 1;
+      inputs.current[Math.max(0, focusAt)]?.focus();
+      return;
+    }
+
+    const digit = digits.slice(-1);
     const next = [...otp];
     next[index] = digit;
     setOtp(next);
     setError('');
-    if (digit && index < 5) inputs.current[index + 1]?.focus();
+    if (digit && index < OTP_LENGTH - 1) inputs.current[index + 1]?.focus();
   };
 
   const onKeyPress = (index: number, key: string) => {
@@ -52,11 +68,11 @@ export function OtpScreen({ navigation, route }: Props) {
   };
 
   const verify = async () => {
-    if (code.length < 6) {
-      setError('Enter the 6-digit code');
+    if (code.length < OTP_LENGTH) {
+      setError(`Enter the ${OTP_LENGTH}-digit code`);
       return;
     }
-    // Prototype: any 6-digit code is accepted (demo tip shows 123456)
+    // Prototype: any 4-digit code is accepted (demo tip shows 1234)
     setLoading(true);
     try {
       if (mode === 'login') {
@@ -82,7 +98,7 @@ export function OtpScreen({ navigation, route }: Props) {
           <Text style={styles.sub}>
             Code sent to <Text style={styles.phone}>{phone}</Text>
           </Text>
-          <Text style={styles.hint}>Demo tip: use 123456</Text>
+          <Text style={styles.hint}>Demo tip: use 1234</Text>
 
           <View style={styles.otpRow}>
             {otp.map((d, i) => (
@@ -93,11 +109,13 @@ export function OtpScreen({ navigation, route }: Props) {
                 }}
                 style={[styles.otpBox, d ? styles.otpFilled : null, error ? styles.otpError : null]}
                 keyboardType="number-pad"
-                maxLength={1}
+                maxLength={i === 0 ? OTP_LENGTH : 1}
                 value={d}
                 onChangeText={(v) => onChangeDigit(i, v)}
                 onKeyPress={({ nativeEvent }) => onKeyPress(i, nativeEvent.key)}
                 selectTextOnFocus
+                textContentType="oneTimeCode"
+                autoComplete="sms-otp"
               />
             ))}
           </View>
@@ -107,7 +125,7 @@ export function OtpScreen({ navigation, route }: Props) {
             disabled={seconds > 0}
             onPress={() => {
               setSeconds(RESEND_SECONDS);
-              setOtp(['', '', '', '', '', '']);
+              setOtp(emptyOtp());
               setError('');
             }}
             style={styles.resend}
@@ -128,10 +146,27 @@ const styles = StyleSheet.create({
   title: { ...typography.h1, color: colors.ink },
   sub: { ...typography.body, color: colors.inkSoft, marginTop: spacing.sm },
   phone: { fontWeight: '600', color: colors.ink },
-  hint: { ...typography.caption, color: colors.muted, marginTop: spacing.sm, marginBottom: spacing.xxl },
-  otpRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
+  hint: {
+    ...typography.caption,
+    color: colors.muted,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xxl,
+  },
+  otpRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.md,
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 320,
+  },
   otpBox: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    minWidth: 48,
+    maxWidth: 64,
     height: 56,
     borderRadius: radius.md,
     borderWidth: 1.5,
@@ -141,6 +176,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: colors.ink,
+    paddingHorizontal: 0,
   },
   otpFilled: { borderColor: colors.yellowDeep, backgroundColor: colors.yellowSoft },
   otpError: { borderColor: colors.danger },

@@ -6,11 +6,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { FranLogo } from '../../components/FranLogo';
 import { Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
+import { ContentWidth } from '../../layout/ContentWidth';
+import { useLayout } from '../../layout/useLayout';
 import type { MainTabParamList } from '../../types';
 import { colors, fonts, radius, shadow, spacing, typography } from '../../theme';
 
 /** Simple visual QR placeholder for prototype (no native QR lib required). */
-function QrPlaceholder({ value }: { value: string }) {
+function QrPlaceholder({ value, size }: { value: string; size: number }) {
   const cells = 11;
   const bits: boolean[] = [];
   for (let i = 0; i < cells * cells; i++) {
@@ -24,7 +26,7 @@ function QrPlaceholder({ value }: { value: string }) {
   };
 
   return (
-    <View style={styles.qrBox}>
+    <View style={[styles.qrBox, { width: size, height: size }]}>
       {Array.from({ length: cells }).map((_, r) => (
         <View key={r} style={styles.qrRow}>
           {Array.from({ length: cells }).map((__, c) => {
@@ -45,75 +47,106 @@ function QrPlaceholder({ value }: { value: string }) {
 export function MemberIdScreen() {
   const { user, availableVoucherCount } = useUser();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+  const { gutter, useSplitPanels, isExpanded } = useLayout();
+  const qrSize = isExpanded ? 240 : 200;
 
   return (
-    <Screen edges={['top', 'bottom']} style={styles.wrap}>
-      <View style={styles.header}>
-        <FranLogo height={32} />
-        <Text style={styles.subtitle}>Present at checkout to earn points</Text>
+    <Screen padded={false} edges={['top', 'bottom']} constrain={false} style={styles.wrap}>
+      <View style={styles.headerBleed}>
+        <ContentWidth flex={false} style={{ paddingHorizontal: gutter }}>
+          <View style={styles.headerInner}>
+            <FranLogo height={32} />
+            <Text style={styles.subtitle}>Present at checkout to earn points</Text>
+          </View>
+        </ContentWidth>
       </View>
 
-      <View style={[styles.card, shadow.lg]}>
-        <View style={styles.idRow}>
-          <View>
-            <Text style={styles.idLabel}>Your Member ID</Text>
-            <Text style={styles.idValue}>{user.memberId}</Text>
+      <ContentWidth flex={false} style={{ paddingHorizontal: gutter }}>
+        <View style={[styles.card, shadow.lg, useSplitPanels && styles.cardSplit]}>
+          <View style={[styles.cardMain, useSplitPanels && styles.cardMainSplit]}>
+            <View style={styles.idRow}>
+              <View>
+                <Text style={styles.idLabel}>Your Member ID</Text>
+                <Text style={styles.idValue}>{user.memberId}</Text>
+              </View>
+              <Pressable onPress={() => {}} style={styles.copyBtn} hitSlop={8}>
+                <Ionicons name="copy-outline" size={18} color={colors.brown} />
+                <Text style={styles.copyText}>Copy</Text>
+              </Pressable>
+            </View>
+
+            {!useSplitPanels ? (
+              <View style={styles.qrWrap}>
+                <QrPlaceholder value={user.memberId} size={qrSize} />
+              </View>
+            ) : null}
+
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.tier}>
+              Tier {user.tier} · {user.points} points
+            </Text>
           </View>
-          <Pressable onPress={() => {}} style={styles.copyBtn} hitSlop={8}>
-            <Ionicons name="copy-outline" size={18} color={colors.brown} />
-            <Text style={styles.copyText}>Copy</Text>
-          </Pressable>
+
+          {useSplitPanels ? (
+            <View style={styles.qrWrap}>
+              <QrPlaceholder value={user.memberId} size={qrSize} />
+            </View>
+          ) : null}
         </View>
 
-        <View style={styles.qrWrap}>
-          <QrPlaceholder value={user.memberId} />
-        </View>
-
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.tier}>
-          Tier {user.tier} · {user.points} points
-        </Text>
-      </View>
-
-      <Pressable
-        style={[styles.vouchersLink, shadow.sm]}
-        onPress={() => navigation.navigate('Vouchers')}
-      >
-        <View style={styles.vLeft}>
-          <Ionicons name="ticket-outline" size={22} color={colors.brown} />
-          <Text style={styles.vTitle}>Use vouchers</Text>
-        </View>
-        <View style={styles.vRight}>
-          <View style={styles.countBadge}>
-            <Text style={styles.countText}>{availableVoucherCount}</Text>
+        <Pressable
+          style={[styles.vouchersLink, shadow.sm]}
+          onPress={() => navigation.navigate('Vouchers')}
+        >
+          <View style={styles.vLeft}>
+            <Ionicons name="ticket-outline" size={22} color={colors.brown} />
+            <Text style={styles.vTitle}>Use vouchers</Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color={colors.muted} />
-        </View>
-      </Pressable>
+          <View style={styles.vRight}>
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{availableVoucherCount}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+          </View>
+        </Pressable>
+      </ContentWidth>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 0, backgroundColor: colors.cream },
-  header: {
-    paddingHorizontal: spacing.xl,
+  wrap: { backgroundColor: colors.cream },
+  headerBleed: {
+    backgroundColor: colors.yellow,
     paddingTop: spacing.lg,
     paddingBottom: spacing.huge,
-    backgroundColor: colors.yellow,
   },
+  headerInner: {},
   subtitle: {
     ...typography.body,
     color: colors.brownSoft,
     marginTop: spacing.sm,
   },
   card: {
-    marginHorizontal: spacing.lg,
     marginTop: -spacing.xxl,
     backgroundColor: colors.surface,
     borderRadius: radius.xl,
     padding: spacing.xl,
     alignItems: 'center',
+  },
+  cardSplit: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.xxl,
+  },
+  cardMain: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  cardMainSplit: {
+    flex: 1,
+    alignItems: 'flex-start',
   },
   idRow: {
     flexDirection: 'row',
@@ -139,8 +172,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   qrBox: {
-    width: 200,
-    height: 200,
     justifyContent: 'space-between',
   },
   qrRow: { flexDirection: 'row', justifyContent: 'space-between', flex: 1 },
@@ -148,7 +179,6 @@ const styles = StyleSheet.create({
   name: { ...typography.h3, color: colors.ink, marginTop: spacing.lg },
   tier: { ...typography.caption, color: colors.muted, marginTop: 2 },
   vouchersLink: {
-    marginHorizontal: spacing.lg,
     marginTop: spacing.lg,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,

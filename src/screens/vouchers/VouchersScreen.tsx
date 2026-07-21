@@ -4,6 +4,8 @@ import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { EmptyState, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
+import { ContentWidth } from '../../layout/ContentWidth';
+import { useLayout } from '../../layout/useLayout';
 import type { RootStackParamList, Voucher } from '../../types';
 import { colors, radius, shadow, spacing, typography } from '../../theme';
 
@@ -25,57 +27,61 @@ export function VouchersScreen() {
   const { user, vouchers } = useUser();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [tab, setTab] = useState<TabKey>('available');
+  const { gutter, voucherColumns } = useLayout();
 
   const data = useMemo(() => vouchers.filter((v) => matchesTab(v, tab)), [vouchers, tab]);
 
   return (
     <Screen padded={false} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Vouchers</Text>
-        <View style={styles.pointsPill}>
-          <Text style={styles.pointsText}>{user.points} pts</Text>
+      <ContentWidth style={{ paddingHorizontal: gutter }}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Vouchers</Text>
+          <View style={styles.pointsPill}>
+            <Text style={styles.pointsText}>{user.points} pts</Text>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.tabs}>
-        {TABS.map((t) => (
-          <Pressable
-            key={t.key}
-            onPress={() => setTab(t.key)}
-            style={[styles.tab, tab === t.key && styles.tabOn]}
-          >
-            <Text style={[styles.tabText, tab === t.key && styles.tabTextOn]}>{t.label}</Text>
-          </Pressable>
-        ))}
-      </View>
+        <View style={styles.tabs}>
+          {TABS.map((t) => (
+            <Pressable
+              key={t.key}
+              onPress={() => setTab(t.key)}
+              style={[styles.tab, tab === t.key && styles.tabOn]}
+            >
+              <Text style={[styles.tabText, tab === t.key && styles.tabTextOn]}>{t.label}</Text>
+            </Pressable>
+          ))}
+        </View>
 
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.list}
-        ListEmptyComponent={
-          <EmptyState
-            icon="ticket-outline"
-            title="No vouchers here"
-            subtitle={
-              tab === 'to_redeem'
-                ? 'Redeem points for vouchers when you have enough.'
-                : tab === 'past'
-                  ? 'Used and expired vouchers will show up here.'
-                  : 'Claim promos or redeem points to fill your wallet.'
-            }
-          />
-        }
-        renderItem={({ item }) => (
-          <VoucherTile
-            voucher={item}
-            past={tab === 'past'}
-            onPress={() => navigation.navigate('VoucherDetail', { voucherId: item.id })}
-          />
-        )}
-      />
+        <FlatList
+          key={`vouchers-${voucherColumns}`}
+          data={data}
+          keyExtractor={(item) => item.id}
+          numColumns={voucherColumns}
+          columnWrapperStyle={voucherColumns > 1 ? styles.row : undefined}
+          contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <EmptyState
+              icon="ticket-outline"
+              title="No vouchers here"
+              subtitle={
+                tab === 'to_redeem'
+                  ? 'Redeem points for vouchers when you have enough.'
+                  : tab === 'past'
+                    ? 'Used and expired vouchers will show up here.'
+                    : 'Claim promos or redeem points to fill your wallet.'
+              }
+            />
+          }
+          renderItem={({ item }) => (
+            <VoucherTile
+              voucher={item}
+              past={tab === 'past'}
+              onPress={() => navigation.navigate('VoucherDetail', { voucherId: item.id })}
+            />
+          )}
+        />
+      </ContentWidth>
     </Screen>
   );
 }
@@ -119,7 +125,6 @@ function VoucherTile({
 
 const styles = StyleSheet.create({
   header: {
-    paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
@@ -135,7 +140,6 @@ const styles = StyleSheet.create({
   pointsText: { ...typography.captionBold, color: colors.brown },
   tabs: {
     flexDirection: 'row',
-    marginHorizontal: spacing.lg,
     marginTop: spacing.lg,
     marginBottom: spacing.md,
     backgroundColor: colors.peachSoft,
@@ -151,7 +155,7 @@ const styles = StyleSheet.create({
   tabOn: { backgroundColor: colors.surface, ...shadow.sm },
   tabText: { ...typography.captionBold, color: colors.muted },
   tabTextOn: { color: colors.brown },
-  list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.huge },
+  list: { paddingBottom: spacing.huge },
   row: { gap: spacing.md, marginBottom: spacing.md },
   tile: {
     flex: 1,

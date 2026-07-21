@@ -7,10 +7,13 @@ import {
   Text,
   TextInput,
   View,
+  type StyleProp,
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ContentWidth } from '../layout/ContentWidth';
+import { useLayout } from '../layout/useLayout';
 import { colors, fonts, radius, shadow, spacing, typography } from '../theme';
 
 export function Screen({
@@ -18,26 +21,38 @@ export function Screen({
   style,
   padded = true,
   edges = ['top'],
+  /** Cap and center content on foldable / tablet widths (default on) */
+  constrain = true,
 }: {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   padded?: boolean;
   edges?: ('top' | 'bottom')[];
+  constrain?: boolean;
 }) {
   const insets = useSafeAreaInsets();
+  const { gutter } = useLayout();
+  const padH = padded ? gutter : 0;
+  const safePads = {
+    paddingTop: edges.includes('top') ? insets.top : 0,
+    paddingBottom: edges.includes('bottom') ? insets.bottom : 0,
+  };
+
+  // Outer keeps full-bleed background; inner gets layout styles (justifyContent, etc.)
+  // so foldable width caps and onboarding vertical spacing both work.
+  if (!constrain) {
+    return (
+      <View style={[styles.screen, safePads, style]}>
+        <View style={[{ flex: 1 }, padded ? { paddingHorizontal: padH } : null]}>{children}</View>
+      </View>
+    );
+  }
+
   return (
-    <View
-      style={[
-        styles.screen,
-        {
-          paddingTop: edges.includes('top') ? insets.top : 0,
-          paddingBottom: edges.includes('bottom') ? insets.bottom : 0,
-          paddingHorizontal: padded ? spacing.lg : 0,
-        },
-        style,
-      ]}
-    >
-      {children}
+    <View style={[styles.screen, safePads, style]}>
+      <ContentWidth style={[padded ? { paddingHorizontal: padH } : null, style]}>
+        {children}
+      </ContentWidth>
     </View>
   );
 }
@@ -163,7 +178,7 @@ export function Card({
   onPress,
 }: {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }) {
   if (onPress) {

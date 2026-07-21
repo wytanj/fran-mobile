@@ -7,6 +7,7 @@ import { Badge, Card, Screen, SectionTitle } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { earnActions, tiers } from '../../data/mock';
 import { categoryLabels } from '../../data/quizQuestions';
+import { useLayout } from '../../layout/useLayout';
 import type { BeautyCategory, RootStackParamList } from '../../types';
 import { colors, radius, shadow, spacing, typography } from '../../theme';
 
@@ -17,6 +18,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 export function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { user, availableVoucherCount } = useUser();
+  const { gutter, earnColumns } = useLayout();
   const [earnOpen, setEarnOpen] = useState(true);
   const tierInfo = tiers.find((t) => t.tier === user.tier)!;
   const nextTier = tiers.find((t) => t.tier === ((user.tier + 1) as 1 | 2 | 3));
@@ -27,11 +29,12 @@ export function ProfileScreen() {
       : 1;
 
   const beautyCats: BeautyCategory[] = ['skin', 'makeup', 'hair', 'lifestyle'];
+  const earnTileWidth = `${Math.floor(100 / earnColumns) - 1}%` as `${number}%`;
 
   return (
     <Screen padded={false} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View style={styles.pad}>
+        <View style={[styles.pad, { paddingHorizontal: gutter }]}>
           <Text style={styles.pageTitle}>Profile</Text>
 
           {/* Tier card */}
@@ -168,7 +171,11 @@ export function ProfileScreen() {
                         navigation.navigate('EarnPoints');
                       }
                     }}
-                    style={[styles.earnItem, done && styles.earnItemDone]}
+                    style={[
+                      styles.earnItem,
+                      { width: earnTileWidth },
+                      done && styles.earnItemDone,
+                    ]}
                   >
                     <Ionicons
                       name={a.icon as any}
@@ -227,7 +234,7 @@ export function ProfileScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingBottom: spacing.huge },
-  pad: { paddingHorizontal: spacing.lg },
+  pad: {},
   pageTitle: { ...typography.h1, color: colors.ink, marginBottom: spacing.lg, marginTop: spacing.sm },
   tierCard: {
     borderRadius: radius.xl,
@@ -311,7 +318,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   earnItem: {
-    width: '31%',
     aspectRatio: 0.95,
     backgroundColor: colors.surface,
     borderRadius: radius.md,

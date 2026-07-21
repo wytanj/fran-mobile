@@ -77,6 +77,7 @@ function MainTabs() {
         headerShown: false,
         tabBarActiveTintColor: colors.brown,
         tabBarInactiveTintColor: colors.tabInactive,
+        // Full-width bar stays thumb-friendly on open foldables (edge reach)
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
       }}

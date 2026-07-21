@@ -3,7 +3,7 @@
     "name": "Fran",
     "slug": "fran-mobile",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -23,7 +23,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "package": "com.fran.mobile",
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
       "favicon": "./assets/favicon.png"

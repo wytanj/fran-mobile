@@ -4,17 +4,19 @@ import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Divider, ListRow, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
+import { useLayout } from '../../layout/useLayout';
 import type { RootStackParamList } from '../../types';
 import { colors, radius, spacing, typography } from '../../theme';
 
 export function AccountScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { user, signOut } = useUser();
+  const { gutter } = useLayout();
 
   return (
     <Screen padded={false} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.pad}>
+        <View style={[styles.pad, { paddingHorizontal: gutter }]}>
           <Text style={styles.title}>Account</Text>
           <View style={styles.hero}>
             <View style={styles.avatar}>
@@ -91,7 +93,7 @@ export function AccountScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingBottom: spacing.huge },
-  pad: { paddingHorizontal: spacing.lg },
+  pad: {},
   title: { ...typography.h1, color: colors.ink, marginTop: spacing.sm, marginBottom: spacing.lg },
   hero: {
     flexDirection: 'row',
