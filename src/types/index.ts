@@ -165,7 +165,13 @@ export type RootStackParamList = {
 export type OnboardingStackParamList = {
   Welcome: undefined;
   Phone: { mode: 'signup' | 'login' };
-  Otp: { mode: 'signup' | 'login'; phone: string };
+  Otp: {
+    mode: 'signup' | 'login';
+    /** Display string e.g. +65 9123 4567 */
+    phone: string;
+    /** E.164 for Twilio / auth API e.g. +6591234567 */
+    phoneE164: string;
+  };
   Name: undefined;
   OptionalDetails: undefined;
   Terms: undefined;

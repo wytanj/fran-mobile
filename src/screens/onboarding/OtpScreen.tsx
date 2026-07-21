@@ -10,24 +10,30 @@ import {
   View,
 } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
+import {
+  DEMO_OTP_CODE,
+  OTP_LENGTH,
+  OTP_RESEND_SECONDS,
+  TWILIO_AUTH_ENABLED,
+} from '../../config/auth';
 import { useUser } from '../../context/UserContext';
+import { sendOtp, verifyOtp } from '../../services/auth';
 import type { OnboardingStackParamList } from '../../types';
 import { colors, radius, spacing, typography } from '../../theme';
 import { signupDraft } from './NameScreen';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Otp'>;
 
-const OTP_LENGTH = 4;
-const RESEND_SECONDS = 30;
 const emptyOtp = () => Array.from({ length: OTP_LENGTH }, () => '');
 
 export function OtpScreen({ navigation, route }: Props) {
-  const { mode, phone } = route.params;
+  const { mode, phone, phoneE164 } = route.params;
   const { signIn } = useUser();
   const [otp, setOtp] = useState(emptyOtp);
   const [error, setError] = useState('');
-  const [seconds, setSeconds] = useState(RESEND_SECONDS);
+  const [seconds, setSeconds] = useState(OTP_RESEND_SECONDS);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const inputs = useRef<(TextInput | null)[]>([]);
 
   useEffect(() => {
@@ -39,7 +45,6 @@ export function OtpScreen({ navigation, route }: Props) {
   const code = otp.join('');
 
   const onChangeDigit = (index: number, value: string) => {
-    // Support paste of full code into any box
     const digits = value.replace(/\D/g, '');
     if (digits.length > 1) {
       const next = emptyOtp();
@@ -67,22 +72,56 @@ export function OtpScreen({ navigation, route }: Props) {
     }
   };
 
+  const completeAuth = async () => {
+    if (mode === 'login') {
+      await signIn(phoneE164);
+    } else {
+      signupDraft.phone = phoneE164;
+      navigation.navigate('Name');
+    }
+  };
+
   const verify = async () => {
     if (code.length < OTP_LENGTH) {
       setError(`Enter the ${OTP_LENGTH}-digit code`);
       return;
     }
-    // Prototype: any 4-digit code is accepted (demo tip shows 1234)
+
     setLoading(true);
+    setError('');
     try {
-      if (mode === 'login') {
-        await signIn(phone);
-      } else {
-        signupDraft.phone = phone;
-        navigation.navigate('Name');
+      const result = await verifyOtp({
+        phoneE164,
+        code,
+        mode,
+      });
+
+      if (!result.ok) {
+        setError(result.error);
+        return;
       }
+
+      await completeAuth();
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onResend = async () => {
+    if (seconds > 0 || resending) return;
+    setResending(true);
+    setError('');
+    try {
+      const result = await sendOtp({ phoneE164, mode, channel: 'sms' });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setOtp(emptyOtp());
+      setSeconds(OTP_RESEND_SECONDS);
+      inputs.current[0]?.focus();
+    } finally {
+      setResending(false);
     }
   };
 
@@ -96,9 +135,14 @@ export function OtpScreen({ navigation, route }: Props) {
         <View style={styles.content}>
           <Text style={styles.title}>Enter OTP</Text>
           <Text style={styles.sub}>
-            Code sent to <Text style={styles.phone}>{phone}</Text>
+            {TWILIO_AUTH_ENABLED ? 'Code sent to ' : 'Demo verify for '}
+            <Text style={styles.phone}>{phone}</Text>
           </Text>
-          <Text style={styles.hint}>Demo tip: use 1234</Text>
+          {!TWILIO_AUTH_ENABLED ? (
+            <Text style={styles.hint}>Demo mode — enter {DEMO_OTP_CODE}</Text>
+          ) : (
+            <Text style={styles.hint}>SMS · Singapore · 4-digit code</Text>
+          )}
 
           <View style={styles.otpRow}>
             {otp.map((d, i) => (
@@ -122,20 +166,30 @@ export function OtpScreen({ navigation, route }: Props) {
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <Pressable
-            disabled={seconds > 0}
-            onPress={() => {
-              setSeconds(RESEND_SECONDS);
-              setOtp(emptyOtp());
-              setError('');
-            }}
+            disabled={seconds > 0 || resending}
+            onPress={onResend}
             style={styles.resend}
           >
-            <Text style={[styles.resendText, seconds > 0 && { color: colors.muted }]}>
-              {seconds > 0 ? `Resend code in ${seconds}s` : 'Resend code'}
+            <Text
+              style={[
+                styles.resendText,
+                (seconds > 0 || resending) && { color: colors.muted },
+              ]}
+            >
+              {resending
+                ? 'Sending…'
+                : seconds > 0
+                  ? `Resend code in ${seconds}s`
+                  : 'Resend code'}
             </Text>
           </Pressable>
         </View>
-        <Button title="Verify" onPress={verify} loading={loading} style={{ marginBottom: spacing.lg }} />
+        <Button
+          title="Verify"
+          onPress={verify}
+          loading={loading}
+          style={{ marginBottom: spacing.lg }}
+        />
       </KeyboardAvoidingView>
     </Screen>
   );
