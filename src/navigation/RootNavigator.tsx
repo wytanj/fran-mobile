@@ -80,6 +80,8 @@ function MainTabs() {
         // Full-width bar stays thumb-friendly on open foldables (edge reach)
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
+        // Foldables / tablets default to label-beside-icon; keep phone layout
+        tabBarLabelPosition: 'below-icon',
       }}
     >
       <Tab.Screen
@@ -105,6 +107,7 @@ function MainTabs() {
         component={MemberIdScreen}
         options={{
           tabBarLabel: 'Member ID',
+          tabBarLabelPosition: 'below-icon',
           tabBarIcon: ({ focused }) => (
             <View style={[styles.centerTab, focused && styles.centerTabOn]}>
               <Text style={styles.centerTabText}>ID</Text>
