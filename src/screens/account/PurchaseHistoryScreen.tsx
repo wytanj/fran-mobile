@@ -1,6 +1,7 @@
+import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { EmptyState, Header, Screen } from '../../components/ui';
 import { orders } from '../../data/mock';
 import type { RootStackParamList } from '../../types';

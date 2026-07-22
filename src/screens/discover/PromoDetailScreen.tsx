@@ -1,7 +1,8 @@
+import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { promoBanners } from '../../data/mock';

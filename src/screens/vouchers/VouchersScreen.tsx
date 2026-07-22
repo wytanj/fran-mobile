@@ -1,7 +1,8 @@
+import { Text } from '../../components/ThemedText';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { EmptyState, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { ContentWidth } from '../../layout/ContentWidth';

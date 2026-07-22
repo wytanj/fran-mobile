@@ -1,8 +1,9 @@
+import { Text } from '../../components/ThemedText';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
+import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
 import { Badge, Card, Screen, SectionTitle } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { earnActions, tiers } from '../../data/mock';

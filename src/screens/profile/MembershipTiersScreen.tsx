@@ -1,3 +1,4 @@
+import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
@@ -7,7 +8,6 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import { Header, Screen } from '../../components/ui';

@@ -1,7 +1,8 @@
+import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Alert, LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import type { RootStackParamList } from '../../types';

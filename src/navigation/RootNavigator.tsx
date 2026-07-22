@@ -1,11 +1,12 @@
+import { Text } from '../components/ThemedText';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { resolveFontFamily, useTypography } from '../context/TypographyContext';
 import { useUser } from '../context/UserContext';
-import { fonts } from '../theme';
 import { AccountScreen } from '../screens/account/AccountScreen';
 import { FaqScreen } from '../screens/account/FaqScreen';
 import { FeedbackScreen } from '../screens/account/FeedbackScreen';
@@ -34,7 +35,7 @@ import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { QuizScreen } from '../screens/profile/QuizScreen';
 import { VoucherDetailScreen } from '../screens/vouchers/VoucherDetailScreen';
 import { VouchersScreen } from '../screens/vouchers/VouchersScreen';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 import type {
   MainTabParamList,
   OnboardingStackParamList,
@@ -71,6 +72,8 @@ function OnboardingNavigator() {
 }
 
 function MainTabs() {
+  const { variant } = useTypography();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -79,7 +82,10 @@ function MainTabs() {
         tabBarInactiveTintColor: colors.tabInactive,
         // Full-width bar stays thumb-friendly on open foldables (edge reach)
         tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabLabel,
+        tabBarLabelStyle: StyleSheet.flatten([
+          styles.tabLabel,
+          { fontFamily: resolveFontFamily(variant, fonts.bodySemi) },
+        ]),
         // Foldables / tablets default to label-beside-icon; keep phone layout
         tabBarLabelPosition: 'below-icon',
       }}

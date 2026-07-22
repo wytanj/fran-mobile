@@ -1,6 +1,7 @@
+import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FranLogo } from '../../components/FranLogo';
 import { Button, Screen } from '../../components/ui';
 import type { OnboardingStackParamList } from '../../types';

@@ -1,3 +1,4 @@
+import { Text, TextInput } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -5,8 +6,6 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
@@ -34,7 +33,7 @@ export function OtpScreen({ navigation, route }: Props) {
   const [seconds, setSeconds] = useState(OTP_RESEND_SECONDS);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const inputs = useRef<(TextInput | null)[]>([]);
+  const inputs = useRef<(React.ElementRef<typeof TextInput> | null)[]>([]);
 
   useEffect(() => {
     if (seconds <= 0) return;

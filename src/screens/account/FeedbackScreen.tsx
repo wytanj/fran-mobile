@@ -1,6 +1,7 @@
+import { Text, TextInput } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
 import type { RootStackParamList } from '../../types';
 import { colors, radius, spacing, typography } from '../../theme';

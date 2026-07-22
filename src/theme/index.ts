@@ -6,15 +6,15 @@
  */
 
 export const fonts = {
-  /** Marr Sans Condensed stand-in — bold condensed display */
-  display: 'BarlowCondensed_700Bold',
-  displayExtra: 'BarlowCondensed_800ExtraBold',
-  displayMedium: 'BarlowCondensed_600SemiBold',
-  /** Symbol stand-in — friendly geometric body */
-  body: 'DMSans_400Regular',
-  bodyMedium: 'DMSans_500Medium',
-  bodySemi: 'DMSans_600SemiBold',
-  bodyBold: 'DMSans_700Bold',
+  /** Platform — bold retail display */
+  display: 'FranPlatformBold',
+  displayExtra: 'FranPlatformBold',
+  displayMedium: 'FranPlatformMedium',
+  /** Symbol — friendly geometric body */
+  body: 'FranSymbolBook',
+  bodyMedium: 'FranSymbolMedium',
+  bodySemi: 'FranSymbolSemibold',
+  bodyBold: 'FranSymbolBold',
 };
 
 export const colors = {

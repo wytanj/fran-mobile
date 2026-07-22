@@ -1,7 +1,8 @@
+import { Text, TextInput } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Header, Screen } from '../../components/ui';
 import { faqs } from '../../data/mock';
 import type { RootStackParamList } from '../../types';

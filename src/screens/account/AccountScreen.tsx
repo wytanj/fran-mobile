@@ -1,7 +1,8 @@
+import { Text } from '../../components/ThemedText';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Divider, ListRow, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { useLayout } from '../../layout/useLayout';

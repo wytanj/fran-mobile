@@ -1,6 +1,7 @@
+import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { categoryLabels, quizQuestions } from '../../data/quizQuestions';
