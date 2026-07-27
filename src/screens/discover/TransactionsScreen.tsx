@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Header, Screen } from '../../components/ui';
@@ -22,7 +22,7 @@ export function TransactionsScreen({ navigation }: Props) {
         <Text style={styles.points}>{user.points}</Text>
         {user.tier === 1 && user.pointsExpiringSoon > 0 ? (
           <View style={styles.expiringChip}>
-            <Ionicons name="time-outline" size={12} color={colors.warning} />
+            <FranIcon name="clock" size={12} color={colors.warning} />
             <Text style={styles.expiring}>
               {user.pointsExpiringSoon} expiring by Q3 2026
             </Text>
@@ -52,7 +52,7 @@ export function TransactionsScreen({ navigation }: Props) {
           return (
             <View style={styles.row}>
               <View style={[styles.icon, { backgroundColor: color + '18' }]}>
-                <Ionicons name={icon as any} size={20} color={color} />
+                <FranIcon name={icon as any} size={20} color={color} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.desc}>{item.description}</Text>

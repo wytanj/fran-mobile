@@ -20,7 +20,7 @@ export function PrivacyScreen({ navigation }: Props) {
       <Text style={styles.section}>Notifications</Text>
       <View style={[styles.group, shadow.sm]}>
         <View style={styles.row}>
-          <IconTile icon="notifications-outline" size={38} />
+          <IconTile icon="alert" size={38} />
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Push notifications</Text>
             <Text style={styles.sub}>Points, streaks and voucher reminders</Text>
@@ -34,7 +34,7 @@ export function PrivacyScreen({ navigation }: Props) {
         </View>
         <Divider inset />
         <View style={styles.row}>
-          <IconTile icon="pricetags-outline" size={38} iconSize={18} tone="peach" />
+          <IconTile icon="tag" size={38} iconSize={18} tone="peach" />
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Promo & offers</Text>
             <Text style={styles.sub}>Member-exclusive drops and events</Text>
@@ -53,7 +53,7 @@ export function PrivacyScreen({ navigation }: Props) {
         <ListRow
           title="Privacy policy"
           subtitle="How we store and use your data"
-          icon="shield-checkmark-outline"
+          icon="shield"
           iconTone="blue"
           onPress={() => Alert.alert('Privacy policy', 'Full policy will open on the Fran website.')}
         />

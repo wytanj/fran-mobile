@@ -1,7 +1,7 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { EmptyState, Perforation, PressableScale, Screen, Segmented } from '../../components/ui';
@@ -43,7 +43,7 @@ export function VouchersScreen() {
             <Text style={styles.title}>Vouchers</Text>
           </View>
           <View style={styles.pointsPill}>
-            <Ionicons name="diamond" size={12} color={colors.brown} />
+            <FranIcon name="gem" size={12} color={colors.brown} />
             <Text style={styles.pointsText}>{user.points} pts</Text>
           </View>
         </View>
@@ -60,7 +60,7 @@ export function VouchersScreen() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <EmptyState
-              icon="ticket-outline"
+              icon="ticket"
               title="No vouchers here"
               subtitle={
                 tab === 'to_redeem'
@@ -128,7 +128,7 @@ function VoucherTile({
             </Text>
           ) : voucher.pointsCost != null && voucher.status === 'to_redeem' ? (
             <View style={styles.costPill}>
-              <Ionicons name="diamond" size={10} color={colors.brown} />
+              <FranIcon name="gem" size={10} color={colors.brown} />
               <Text style={styles.cost}>{voucher.pointsCost} pts</Text>
             </View>
           ) : voucher.expiresAt ? (

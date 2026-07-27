@@ -20,7 +20,7 @@ export function PurchaseHistoryScreen({ navigation }: Props) {
         contentContainerStyle={{ paddingBottom: spacing.huge }}
         ListEmptyComponent={
           <EmptyState
-            icon="receipt-outline"
+            icon="receipt"
             title="No purchases yet"
             subtitle="Receipts appear here after checkout."
           />
@@ -31,7 +31,7 @@ export function PurchaseHistoryScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('OrderDetail', { orderId: item.id })}
             accessibilityLabel={`Order ${item.orderNo}, $${item.total.toFixed(2)}`}
           >
-            <IconTile icon="receipt-outline" tone="peach" size={40} />
+            <IconTile icon="receipt" tone="peach" size={40} />
             <View style={{ flex: 1 }}>
               <Text style={styles.orderNo}>{item.store}</Text>
               <Text style={styles.meta}>

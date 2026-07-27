@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
@@ -35,7 +35,7 @@ export function OptionalDetailsScreen({ navigation }: Props) {
       >
         <View style={styles.content}>
           <View style={styles.iconWell}>
-            <Ionicons name="gift-outline" size={22} color={colors.brown} />
+            <FranIcon name="gift" size={22} color={colors.brown} />
           </View>
           <Text style={styles.title}>Optional details</Text>
           <Text style={styles.sub}>
@@ -63,7 +63,7 @@ export function OptionalDetailsScreen({ navigation }: Props) {
         <Button
           title="Continue"
           onPress={() => goNext(false)}
-          icon="arrow-forward"
+          icon="arrowRight"
           iconAfter
         />
         <Pressable

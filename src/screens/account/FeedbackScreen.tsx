@@ -1,6 +1,6 @@
 import { Text, TextInput } from '../../components/ThemedText';
+import { FranIcon, type FranIconName } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
@@ -9,12 +9,12 @@ import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Feedback'>;
 
-const RATINGS: { label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { label: 'Very satisfied', icon: 'happy-outline' },
-  { label: 'Satisfied', icon: 'thumbs-up-outline' },
-  { label: 'Neutral', icon: 'remove-circle-outline' },
-  { label: 'Dissatisfied', icon: 'thumbs-down-outline' },
-  { label: 'Very dissatisfied', icon: 'sad-outline' },
+const RATINGS: { label: string; icon: FranIconName }[] = [
+  { label: 'Very satisfied', icon: 'faceGrin' },
+  { label: 'Satisfied', icon: 'faceSmile' },
+  { label: 'Neutral', icon: 'faceFlat' },
+  { label: 'Dissatisfied', icon: 'faceFrown' },
+  { label: 'Very dissatisfied', icon: 'faceDeepFrown' },
 ];
 
 export function FeedbackScreen({ navigation }: Props) {
@@ -49,13 +49,13 @@ export function FeedbackScreen({ navigation }: Props) {
                   pressed && !on && { backgroundColor: colors.surfaceSunken },
                 ]}
               >
-                <Ionicons
+                <FranIcon
                   name={r.icon}
                   size={20}
                   color={on ? colors.brown : colors.brownMuted}
                 />
                 <Text style={[styles.rateText, on && styles.rateTextOn]}>{r.label}</Text>
-                {on ? <Ionicons name="checkmark-circle" size={19} color={colors.brown} /> : null}
+                {on ? <FranIcon name="checkCircle" size={19} color={colors.brown} /> : null}
               </Pressable>
             );
           })}

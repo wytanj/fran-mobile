@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Header, Perforation, Screen } from '../../components/ui';
@@ -29,7 +29,7 @@ export function OrderDetailScreen({ navigation, route }: Props) {
         <View style={[styles.card, shadow.sm]}>
           <View style={styles.head}>
             <View style={styles.stamp}>
-              <Ionicons name="checkmark" size={17} color={colors.brown} />
+              <FranIcon name="check" size={17} color={colors.brown} />
             </View>
             <Text style={styles.thanks}>Thank you for shopping at Fran</Text>
             <Text style={styles.meta}>

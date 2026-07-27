@@ -1,7 +1,7 @@
 import { Text } from '../../components/ThemedText';
+import { type FranIconName } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Divider, ListRow, Screen } from '../../components/ui';
@@ -16,42 +16,42 @@ type MenuRoute = 'MyDetails' | 'PurchaseHistory' | 'StoreLocator' | 'Faq' | 'Fee
 const MENU: {
   title: string;
   subtitle: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: FranIconName;
   route: MenuRoute;
   tone?: 'yellow' | 'blue' | 'peach';
 }[] = [
   {
     title: 'My details',
     subtitle: 'Name, contact and birthday',
-    icon: 'person-outline',
+    icon: 'person',
     route: 'MyDetails',
   },
   {
     title: 'Purchase history',
     subtitle: 'Past orders and receipts',
-    icon: 'receipt-outline',
+    icon: 'receipt',
     route: 'PurchaseHistory',
     tone: 'blue',
   },
   {
     title: 'Store locator',
     subtitle: 'Find a Fran near you',
-    icon: 'location-outline',
+    icon: 'pin',
     route: 'StoreLocator',
     tone: 'peach',
   },
-  { title: 'FAQ', subtitle: 'Points, tiers and vouchers', icon: 'help-circle-outline', route: 'Faq' },
+  { title: 'FAQ', subtitle: 'Points, tiers and vouchers', icon: 'help', route: 'Faq' },
   {
     title: 'My feedback',
     subtitle: 'Tell us how we are doing',
-    icon: 'chatbubble-ellipses-outline',
+    icon: 'chat',
     route: 'Feedback',
     tone: 'blue',
   },
   {
     title: 'Privacy',
     subtitle: 'Data and account controls',
-    icon: 'shield-checkmark-outline',
+    icon: 'shield',
     route: 'Privacy',
     tone: 'peach',
   },
@@ -102,7 +102,7 @@ export function AccountScreen() {
           <View style={[styles.group, shadow.sm]}>
             <ListRow
               title="Terms of use"
-              icon="document-text-outline"
+              icon="document"
               iconTone="cream"
               onPress={() =>
                 Alert.alert('Terms of use', 'Full write-up will link to the Fran website.')
@@ -111,7 +111,7 @@ export function AccountScreen() {
             <Divider inset />
             <ListRow
               title="Log out"
-              icon="log-out-outline"
+              icon="logout"
               danger
               onPress={() =>
                 Alert.alert('Log out', 'Sign out of Fran?', [

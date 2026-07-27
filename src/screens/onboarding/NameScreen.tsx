@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
@@ -45,7 +45,7 @@ export function NameScreen({ navigation }: Props) {
       >
         <View style={styles.content}>
           <View style={styles.iconWell}>
-            <Ionicons name="person-outline" size={22} color={colors.brown} />
+            <FranIcon name="person" size={22} color={colors.brown} />
           </View>
           <Text style={styles.title}>What should we call you?</Text>
           <Text style={styles.sub}>Your name helps personalize rewards and in-app greetings.</Text>
@@ -62,7 +62,7 @@ export function NameScreen({ navigation }: Props) {
         <Button
           title="Continue"
           onPress={goNext}
-          icon="arrow-forward"
+          icon="arrowRight"
           iconAfter
           style={{ marginBottom: spacing.lg }}
         />

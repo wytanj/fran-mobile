@@ -23,6 +23,12 @@ const MAX_CONTENT: Record<LayoutSize, number | undefined> = {
   expanded: 1040,
 };
 
+/**
+ * Smallest comfortable earn-action tile. Drives how many columns fit, so big
+ * phones (430pt) get 4 and small ones (320pt) stay at 3 rather than cramming.
+ */
+const MIN_EARN_TILE = 88;
+
 export function useLayout() {
   const { width, height } = useWindowDimensions();
 
@@ -56,8 +62,21 @@ export function useLayout() {
     /** Generic multi-column lists (bundles, etc.) */
     const listColumns = isExpanded ? 2 : 1;
 
-    /** Earn-action tile width fraction of row */
-    const earnColumns = isExpanded ? 5 : isWide ? 4 : 3;
+    /**
+     * Earn-action grid. Sized in pixels rather than percentages: a `%` width
+     * ignores the flex gap, so a row that should hold N tiles overflows by a
+     * fraction of a point and wraps one tile short, leaving a dead column.
+     * Column count follows the row width so tiles stay near 90–130pt.
+     */
+    const earnGap = spacing.sm;
+    const earnRowWidth = pageWidth - gutter * 2;
+    const earnColumns = Math.max(
+      3,
+      Math.min(5, Math.floor((earnRowWidth + earnGap) / (MIN_EARN_TILE + earnGap))),
+    );
+    const earnTileWidth = Math.floor(
+      (earnRowWidth - earnGap * (earnColumns - 1)) / earnColumns,
+    );
 
     return {
       width,
@@ -75,6 +94,8 @@ export function useLayout() {
       voucherColumns,
       listColumns,
       earnColumns,
+      earnTileWidth,
+      earnGap,
       /** Side-by-side panels (points + check-in, member QR) when space allows */
       useSplitPanels: isWide || (isLandscape && width >= 520),
     };

@@ -1,6 +1,6 @@
 import { Text, TextInput } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -134,7 +134,7 @@ export function OtpScreen({ navigation, route }: Props) {
       >
         <View style={styles.content}>
           <View style={styles.lockWell}>
-            <Ionicons name="chatbubble-ellipses" size={22} color={colors.brown} />
+            <FranIcon name="chat" size={22} color={colors.brown} />
           </View>
           <Text style={styles.title}>Enter OTP</Text>
           <Text style={styles.sub}>
@@ -170,7 +170,7 @@ export function OtpScreen({ navigation, route }: Props) {
           </View>
           {error ? (
             <View style={styles.errorRow}>
-              <Ionicons name="alert-circle" size={14} color={colors.danger} />
+              <FranIcon name="alert" size={14} color={colors.danger} />
               <Text style={styles.error}>{error}</Text>
             </View>
           ) : null}

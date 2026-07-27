@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Header, Screen } from '../../components/ui';
@@ -45,7 +45,7 @@ export function BeautyResultsScreen({ navigation, route }: Props) {
             {copy.tips.map((t) => (
               <View key={t} style={styles.tip}>
                 <View style={styles.tipIcon}>
-                  <Ionicons name="bulb-outline" size={15} color={colors.brown} />
+                  <FranIcon name="bulb" size={15} color={colors.brown} />
                 </View>
                 <Text style={styles.tipText}>{t}</Text>
               </View>

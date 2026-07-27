@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Alert, LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Badge, Button, Header, Perforation, Screen } from '../../components/ui';
@@ -120,7 +120,7 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
         {showQr && voucher.status === 'available' ? (
           <View style={[styles.qrCard, shadow.sm]}>
             <View style={styles.qrFrame}>
-              <Ionicons name="qr-code" size={132} color={colors.ink} />
+              <FranIcon name="qr" size={132} color={colors.ink} />
             </View>
             <Text style={styles.qrHint}>Show this code at checkout</Text>
             <Text style={styles.qrId}>{user.memberId}</Text>
@@ -138,8 +138,8 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
         >
           <Text style={styles.termsTitle}>Terms & conditions</Text>
           <View style={styles.chevronWell}>
-            <Ionicons
-              name={termsOpen ? 'chevron-up' : 'chevron-down'}
+            <FranIcon
+              name={termsOpen ? 'chevronUp' : 'chevronDown'}
               size={16}
               color={colors.brown}
             />
@@ -170,7 +170,7 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
                 ? 'Ready to scan'
                 : 'Use now'
           }
-          icon={showQr ? 'checkmark-circle' : undefined}
+          icon={showQr ? 'checkCircle' : undefined}
           onPress={onPrimary}
           loading={loading}
           disabled={showQr}

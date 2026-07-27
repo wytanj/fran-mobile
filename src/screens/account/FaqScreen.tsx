@@ -1,6 +1,6 @@
 import { Text, TextInput } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Header, Screen } from '../../components/ui';
@@ -47,7 +47,7 @@ export function FaqScreen({ navigation }: Props) {
         <View style={styles.itemHead}>
           <Text style={styles.q}>{question}</Text>
           <View style={[styles.plus, open && styles.plusOpen]}>
-            <Ionicons name={open ? 'remove' : 'add'} size={16} color={colors.brown} />
+            <FranIcon name={open ? 'minus' : 'plus'} size={16} color={colors.brown} />
           </View>
         </View>
         {open ? <Text style={styles.a}>{answer}</Text> : null}
@@ -59,7 +59,7 @@ export function FaqScreen({ navigation }: Props) {
     <Screen edges={['top']}>
       <Header title="FAQ" onBack={() => navigation.goBack()} />
       <View style={styles.search}>
-        <Ionicons name="search" size={17} color={colors.brownMuted} />
+        <FranIcon name="search" size={17} color={colors.brownMuted} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search FAQs"
@@ -69,7 +69,7 @@ export function FaqScreen({ navigation }: Props) {
         />
         {query ? (
           <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityLabel="Clear search">
-            <Ionicons name="close-circle" size={17} color={colors.borderStrong} />
+            <FranIcon name="closeCircle" size={17} color={colors.borderStrong} />
           </Pressable>
         ) : null}
       </View>

@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
@@ -43,7 +43,7 @@ export function MyDetailsScreen({ navigation }: Props) {
           <Text style={styles.fieldLabel}>Phone number *</Text>
           <View style={[styles.field, styles.fieldLocked]}>
             <Text style={styles.fieldValue}>{user.phone}</Text>
-            <Ionicons name="lock-closed" size={14} color={colors.brownMuted} />
+            <FranIcon name="lock" size={14} color={colors.brownMuted} />
           </View>
         </View>
 
@@ -57,7 +57,7 @@ export function MyDetailsScreen({ navigation }: Props) {
             <Text style={[styles.fieldValue, !user.gender && styles.fieldPlaceholder]}>
               {formatGender(user.gender)}
             </Text>
-            <Ionicons name="chevron-down" size={16} color={colors.brownMuted} />
+            <FranIcon name="chevronDown" size={16} color={colors.brownMuted} />
           </Pressable>
         </View>
 
@@ -86,8 +86,8 @@ export function MyDetailsScreen({ navigation }: Props) {
             >
               {user.birthday ?? 'Add birthday for +10 points'}
             </Text>
-            <Ionicons
-              name={user.birthday ? 'lock-closed' : 'chevron-forward'}
+            <FranIcon
+              name={user.birthday ? 'lock' : 'chevronRight'}
               size={user.birthday ? 14 : 16}
               color={user.birthday ? colors.brownMuted : colors.brown}
             />
@@ -144,7 +144,7 @@ export function MyDetailsScreen({ navigation }: Props) {
                 >
                   <Text style={[styles.sheetText, on && { color: colors.brown }]}>{g.label}</Text>
                   {on ? (
-                    <Ionicons name="checkmark-circle" size={19} color={colors.brown} />
+                    <FranIcon name="checkCircle" size={19} color={colors.brown} />
                   ) : null}
                 </Pressable>
               );

@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon, type FranIconName } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { Header, IconTile, PressableScale, Screen } from '../../components/ui';
@@ -52,14 +52,14 @@ export function EarnPointsScreen({ navigation }: Props) {
               }}
             >
               <IconTile
-                icon={a.icon as keyof typeof Ionicons.glyphMap}
+                icon={a.icon as FranIconName}
                 tone={done ? 'cream' : 'yellow'}
                 size={42}
               />
               <Text style={[styles.title, done && styles.done]}>{a.title}</Text>
               {done ? (
                 <View style={styles.doneRow}>
-                  <Ionicons name="checkmark-circle" size={13} color={colors.success} />
+                  <FranIcon name="checkCircle" size={13} color={colors.success} />
                   <Text style={styles.doneText}>Completed</Text>
                 </View>
               ) : (

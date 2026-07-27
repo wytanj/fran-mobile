@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { FranIcon } from './FranIcon';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { fontFamilies, typographyVariants, useTypography } from '../context/TypographyContext';
 import { colors, radius, shadow, spacing } from '../theme';
@@ -12,7 +12,7 @@ export function TypographySelector() {
     <View style={styles.dock}>
       <View style={[styles.shell, shadow.md]}>
         <View style={styles.icon}>
-          <Ionicons name="text" size={13} color={colors.brown} />
+          <FranIcon name="type" size={13} color={colors.brown} />
         </View>
         <ScrollView
           horizontal

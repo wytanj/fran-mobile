@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon, type FranIconName } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Badge, Header, IconTile, ProgressBar, Screen } from '../../components/ui';
@@ -13,11 +13,11 @@ type Props = NativeStackScreenProps<RootStackParamList, 'BeautyProfile'>;
 
 const cats: BeautyCategory[] = ['skin', 'makeup', 'hair', 'lifestyle'];
 
-const CAT_ICONS: Record<BeautyCategory, keyof typeof Ionicons.glyphMap> = {
-  skin: 'water-outline',
-  makeup: 'color-palette-outline',
-  hair: 'cut-outline',
-  lifestyle: 'leaf-outline',
+const CAT_ICONS: Record<BeautyCategory, FranIconName> = {
+  skin: 'droplet',
+  makeup: 'lipstick',
+  hair: 'comb',
+  lifestyle: 'leaf',
 };
 
 export function BeautyProfileScreen({ navigation }: Props) {
@@ -60,7 +60,7 @@ export function BeautyProfileScreen({ navigation }: Props) {
                 <Badge label={done ? 'Completed' : '+15 pts'} tone={done ? 'success' : 'primary'} />
               </View>
               {done ? (
-                <Ionicons name="chevron-forward" size={17} color={colors.borderStrong} />
+                <FranIcon name="chevronRight" size={17} color={colors.borderStrong} />
               ) : (
                 <Text style={styles.quizCta}>Start ›</Text>
               )}
@@ -70,7 +70,7 @@ export function BeautyProfileScreen({ navigation }: Props) {
       </View>
       <View style={styles.soon}>
         <View style={styles.soonRow}>
-          <Ionicons name="sparkles-outline" size={17} color={colors.brownMuted} />
+          <FranIcon name="glow" size={17} color={colors.brownMuted} />
           <Text style={styles.soonTitle}>My recommendations</Text>
         </View>
         <Text style={styles.soonSub}>

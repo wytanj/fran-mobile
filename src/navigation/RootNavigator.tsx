@@ -1,5 +1,5 @@
 import { Text } from '../components/ThemedText';
-import { Ionicons } from '@expo/vector-icons';
+import { FranIcon, type FranIconName } from '../components/FranIcon';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -72,23 +72,22 @@ function OnboardingNavigator() {
 }
 
 /**
- * Icon in a soft yellow capsule when active — reads as a selection without
- * needing a second accent colour in the bar.
+ * Icon in a soft yellow capsule when active. The Fran set has one glyph per
+ * concept — no outline/filled pair — so selection reads from the capsule and
+ * colour rather than a second drawing.
  */
 function TabIcon({
   name,
-  activeName,
   color,
   focused,
 }: {
-  name: keyof typeof Ionicons.glyphMap;
-  activeName: keyof typeof Ionicons.glyphMap;
+  name: FranIconName;
   color: string;
   focused: boolean;
 }) {
   return (
     <View style={[styles.tabIcon, focused && styles.tabIconOn]}>
-      <Ionicons name={focused ? activeName : name} size={21} color={color} />
+      <FranIcon name={name} size={21} color={color} />
     </View>
   );
 }
@@ -118,7 +117,7 @@ function MainTabs() {
         component={DiscoverScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="compass-outline" activeName="compass" color={color} focused={focused} />
+            <TabIcon name="discover" color={color} focused={focused} />
           ),
         }}
       />
@@ -127,7 +126,7 @@ function MainTabs() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="sparkles-outline" activeName="sparkles" color={color} focused={focused} />
+            <TabIcon name="glow" color={color} focused={focused} />
           ),
         }}
       />
@@ -149,7 +148,7 @@ function MainTabs() {
         component={VouchersScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="ticket-outline" activeName="ticket" color={color} focused={focused} />
+            <TabIcon name="ticket" color={color} focused={focused} />
           ),
         }}
       />
@@ -158,7 +157,7 @@ function MainTabs() {
         component={AccountScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="person-outline" activeName="person" color={color} focused={focused} />
+            <TabIcon name="person" color={color} focused={focused} />
           ),
         }}
       />
@@ -263,7 +262,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    // Negative top margin lifts the button out of the bar. A positive
+    // marginBottom would lift it too, but it also pushes the "Member ID"
+    // label down into the button.
+    marginTop: -18,
     borderWidth: 4,
     borderColor: colors.surface,
     shadowColor: colors.yellowDeep,

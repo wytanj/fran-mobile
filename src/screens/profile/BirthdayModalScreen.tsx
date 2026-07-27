@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
@@ -22,7 +22,7 @@ export function BirthdayModalScreen({ navigation }: Props) {
         <Header title="Birthday" onBack={() => navigation.goBack()} />
         <View style={styles.lockedCard}>
           <View style={styles.iconWell}>
-            <Ionicons name="gift" size={22} color={colors.brown} />
+            <FranIcon name="gift" size={22} color={colors.brown} />
           </View>
           <Text style={styles.lockedValue}>{user.birthday}</Text>
           <Text style={styles.lockedNote}>
@@ -52,7 +52,7 @@ export function BirthdayModalScreen({ navigation }: Props) {
     <Screen edges={['top']}>
       <Header title="Your birthday" onBack={() => navigation.goBack()} />
       <View style={styles.iconWell}>
-        <Ionicons name="gift-outline" size={22} color={colors.brown} />
+        <FranIcon name="gift" size={22} color={colors.brown} />
       </View>
       <Text style={styles.body}>
         Add your birthday once for +10 points and birthday-month 2× points. This cannot be changed

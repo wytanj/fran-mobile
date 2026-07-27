@@ -1,7 +1,7 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useRef, useState } from 'react';
 import {
@@ -75,7 +75,7 @@ export function DiscoverScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`${user.points} points`}
               >
-                <Ionicons name="diamond" size={12} color={colors.brown} />
+                <FranIcon name="gem" size={12} color={colors.brown} />
                 <Text style={styles.pointsPillText}>{user.points}</Text>
               </Pressable>
             </View>
@@ -135,7 +135,7 @@ export function DiscoverScreen() {
                           <Text style={[styles.bannerCtaText, { color: on.chipFg }]}>
                             {item.ctaLabel}
                           </Text>
-                          <Ionicons name="arrow-forward" size={13} color={on.chipFg} />
+                          <FranIcon name="arrowRight" size={13} color={on.chipFg} />
                         </View>
                       ) : null}
                     </View>
@@ -158,7 +158,7 @@ export function DiscoverScreen() {
                   <Text style={styles.pointsLabel}>Your points</Text>
                   <Text style={styles.pointsValue}>{user.points}</Text>
                 </View>
-                <IconTile icon="diamond-outline" size={52} iconSize={26} />
+                <IconTile icon="gem" size={52} iconSize={26} />
               </View>
 
               <View style={styles.pointsFooter}>
@@ -168,11 +168,11 @@ export function DiscoverScreen() {
                     style={styles.expiringChip}
                     accessibilityRole="button"
                   >
-                    <Ionicons name="time-outline" size={12} color={colors.warning} />
+                    <FranIcon name="clock" size={12} color={colors.warning} />
                     <Text style={styles.expiring}>
                       {user.pointsExpiringSoon} expiring soon
                     </Text>
-                    <Ionicons name="chevron-forward" size={12} color={colors.warning} />
+                    <FranIcon name="chevronRight" size={12} color={colors.warning} />
                   </Pressable>
                 ) : (
                   <Text style={styles.expiringMuted}>
@@ -185,7 +185,7 @@ export function DiscoverScreen() {
             <Card style={[styles.checkInCard, useSplitPanels && styles.splitHalf]}>
               <View style={styles.streakHeader}>
                 <View style={styles.streakFlame}>
-                  <Ionicons name="flame" size={20} color={colors.streak} />
+                  <FranIcon name="flame" size={20} color={colors.streak} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.streakTitle}>{user.streakCount}-day win streak</Text>
@@ -202,8 +202,8 @@ export function DiscoverScreen() {
                         i < user.streakFreezes ? styles.freezeOn : styles.freezeOff,
                       ]}
                     >
-                      <Ionicons
-                        name="snow-outline"
+                      <FranIcon
+                        name="snowflake"
                         size={13}
                         color={i < user.streakFreezes ? colors.info : colors.borderStrong}
                       />
@@ -220,7 +220,7 @@ export function DiscoverScreen() {
                       <Text style={[styles.dayLabel, done && styles.dayLabelOn]}>{label}</Text>
                       <View style={[styles.dayDot, done && styles.dayDotOn]}>
                         {done ? (
-                          <Ionicons name="checkmark" size={15} color={colors.brown} />
+                          <FranIcon name="check" size={15} color={colors.brown} />
                         ) : null}
                       </View>
                     </View>
@@ -240,7 +240,7 @@ export function DiscoverScreen() {
                 title={user.checkedInToday ? 'Checked in today' : 'Check in for +1 point'}
                 onPress={onCheckIn}
                 disabled={user.checkedInToday}
-                icon={user.checkedInToday ? 'checkmark-circle' : 'flame'}
+                icon={user.checkedInToday ? 'checkCircle' : 'flame'}
                 style={{ marginTop: spacing.lg }}
               />
             </Card>
@@ -260,14 +260,14 @@ export function DiscoverScreen() {
                 accessibilityLabel={b.title}
               >
                 <View style={[styles.bundleSwatch, { backgroundColor: b.color }]}>
-                  <Ionicons name="pricetag" size={17} color={colors.brown} />
+                  <FranIcon name="tag" size={17} color={colors.brown} />
                 </View>
                 <View style={{ flex: 1 }}>
                   {b.badge ? <Badge label={b.badge} /> : null}
                   <Text style={styles.bundleTitle}>{b.title}</Text>
                   <Text style={styles.bundleSub}>{b.subtitle}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={17} color={colors.borderStrong} />
+                <FranIcon name="chevronRight" size={17} color={colors.borderStrong} />
               </PressableScale>
             ))}
           </View>

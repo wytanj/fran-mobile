@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -28,18 +28,18 @@ export function StoreLocatorScreen({ navigation }: Props) {
               end={{ x: 1, y: 1 }}
             >
               <View style={styles.imageIcon}>
-                <Ionicons name="storefront" size={26} color={colors.brown} />
+                <FranIcon name="store" size={26} color={colors.brown} />
               </View>
             </LinearGradient>
             <View style={styles.body}>
               <Text style={styles.name}>{s.name}</Text>
               <Text style={styles.address}>{s.address}</Text>
               <View style={styles.metaRow}>
-                <Ionicons name="time-outline" size={13} color={colors.brownMuted} />
+                <FranIcon name="clock" size={13} color={colors.brownMuted} />
                 <Text style={styles.meta}>{s.hours}</Text>
               </View>
               <View style={styles.metaRow}>
-                <Ionicons name="call-outline" size={13} color={colors.brownMuted} />
+                <FranIcon name="phone" size={13} color={colors.brownMuted} />
                 <Text style={styles.meta}>{s.phone}</Text>
               </View>
             </View>

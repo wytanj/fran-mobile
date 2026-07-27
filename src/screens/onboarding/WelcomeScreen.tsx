@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon, type FranIconName } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FranLogo } from '../../components/FranLogo';
@@ -10,10 +10,10 @@ import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Welcome'>;
 
-const HIGHLIGHTS: { icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
-  { icon: 'diamond-outline', label: 'Earn points in-store' },
-  { icon: 'ticket-outline', label: 'Member-only vouchers' },
-  { icon: 'sparkles-outline', label: 'A beauty profile that helps' },
+const HIGHLIGHTS: { icon: FranIconName; label: string }[] = [
+  { icon: 'gem', label: 'Earn points in-store' },
+  { icon: 'ticket', label: 'Member-only vouchers' },
+  { icon: 'glow', label: 'A beauty profile that helps' },
 ];
 
 export function WelcomeScreen({ navigation }: Props) {
@@ -35,7 +35,7 @@ export function WelcomeScreen({ navigation }: Props) {
           {HIGHLIGHTS.map((h) => (
             <View key={h.label} style={styles.highlightRow}>
               <View style={styles.highlightIcon}>
-                <Ionicons name={h.icon} size={15} color={colors.brown} />
+                <FranIcon name={h.icon} size={15} color={colors.brown} />
               </View>
               <Text style={styles.highlightText}>{h.label}</Text>
             </View>

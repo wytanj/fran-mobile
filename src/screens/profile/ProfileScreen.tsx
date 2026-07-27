@@ -1,7 +1,7 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   LayoutAnimation,
@@ -34,7 +34,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 export function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { user, availableVoucherCount } = useUser();
-  const { gutter, earnColumns } = useLayout();
+  const { gutter, earnTileWidth, earnGap } = useLayout();
   const [earnOpen, setEarnOpen] = useState(true);
   const tierInfo = tiers.find((t) => t.tier === user.tier)!;
   const nextTier = tiers.find((t) => t.tier === ((user.tier + 1) as 1 | 2 | 3));
@@ -45,7 +45,6 @@ export function ProfileScreen() {
       : 1;
 
   const beautyCats: BeautyCategory[] = ['skin', 'makeup', 'hair', 'lifestyle'];
-  const earnTileWidth = `${Math.floor(100 / earnColumns) - 1}%` as `${number}%`;
   const beautyDone = beautyCats.filter((c) => !!user.beautyProfiles[c]).length;
 
   return (
@@ -69,7 +68,7 @@ export function ProfileScreen() {
                 <Text style={[styles.tierName, { color: tierInfo.color }]}>{tierInfo.name}</Text>
                 <View style={styles.benefitsRow}>
                   <Text style={styles.viewBenefits}>View my benefits</Text>
-                  <Ionicons name="chevron-forward" size={13} color={colors.inkSoft} />
+                  <FranIcon name="chevronRight" size={13} color={colors.inkSoft} />
                 </View>
                 {user.tierExpiresAt ? (
                   <Text style={styles.expires}>Expires on {user.tierExpiresAt}</Text>
@@ -94,7 +93,7 @@ export function ProfileScreen() {
                         ]}
                       >
                         {active ? (
-                          <Ionicons name="checkmark" size={13} color={colors.brown} />
+                          <FranIcon name="check" size={13} color={colors.brown} />
                         ) : (
                           <Text style={styles.nodeNum}>{t.tier}</Text>
                         )}
@@ -138,7 +137,7 @@ export function ProfileScreen() {
             >
               <View style={styles.statHead}>
                 <Text style={styles.statLabel}>Points</Text>
-                <Ionicons name="diamond" size={13} color={colors.yellowDeep} />
+                <FranIcon name="gem" size={13} color={colors.yellowDeep} />
               </View>
               <Text style={styles.statValue}>{user.points}</Text>
               {user.pointsExpiringSoon > 0 && user.tier === 1 ? (
@@ -159,7 +158,7 @@ export function ProfileScreen() {
             >
               <View style={styles.statHead}>
                 <Text style={styles.statLabel}>Vouchers</Text>
-                <Ionicons name="ticket" size={13} color={colors.blue} />
+                <FranIcon name="ticket" size={13} color={colors.blue} />
               </View>
               <Text style={styles.statValue}>{availableVoucherCount}</Text>
               <Text style={styles.statMuted}>Available to use</Text>
@@ -181,15 +180,15 @@ export function ProfileScreen() {
               <Text style={styles.sectionH}>More ways to earn points</Text>
             </View>
             <View style={styles.chevronWell}>
-              <Ionicons
-                name={earnOpen ? 'chevron-up' : 'chevron-down'}
+              <FranIcon
+                name={earnOpen ? 'chevronUp' : 'chevronDown'}
                 size={17}
                 color={colors.brown}
               />
             </View>
           </Pressable>
           {earnOpen ? (
-            <View style={styles.earnGrid}>
+            <View style={[styles.earnGrid, { gap: earnGap }]}>
               {earnActions.map((a) => {
                 const done = a.oneTime && !!user.earnActionsCompleted[a.id];
                 return (
@@ -218,7 +217,7 @@ export function ProfileScreen() {
                     style={[styles.earnItem, { width: earnTileWidth }, done && styles.earnItemDone]}
                   >
                     <View style={[styles.earnIcon, done && styles.earnIconDone]}>
-                      <Ionicons
+                      <FranIcon
                         name={a.icon as any}
                         size={19}
                         color={done ? colors.brownMuted : colors.brown}
@@ -229,7 +228,7 @@ export function ProfileScreen() {
                     </Text>
                     {done ? (
                       <View style={styles.earnDonePill}>
-                        <Ionicons name="checkmark" size={11} color={colors.success} />
+                        <FranIcon name="check" size={11} color={colors.success} />
                         <Text style={styles.earnDoneLabel}>Done</Text>
                       </View>
                     ) : (
@@ -272,7 +271,7 @@ export function ProfileScreen() {
                       label={done ? 'Completed' : '+15 pts'}
                       tone={done ? 'success' : 'primary'}
                     />
-                    <Ionicons name="chevron-forward" size={15} color={colors.borderStrong} />
+                    <FranIcon name="chevronRight" size={15} color={colors.borderStrong} />
                   </View>
                 </Pressable>
               );
@@ -281,7 +280,7 @@ export function ProfileScreen() {
 
           <Card tone="sunken" elevation="none" style={styles.comingSoon}>
             <View style={styles.comingSoonRow}>
-              <Ionicons name="sparkles-outline" size={18} color={colors.brownMuted} />
+              <FranIcon name="glow" size={18} color={colors.brownMuted} />
               <Text style={styles.comingSoonTitle}>My recommendations</Text>
               <Badge label="Soon" tone="muted" />
             </View>
@@ -401,11 +400,12 @@ const styles = StyleSheet.create({
   earnGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
     marginBottom: spacing.xs,
   },
   earnItem: {
-    aspectRatio: 0.92,
+    // minHeight rather than aspectRatio — a fixed ratio clips the icon + two
+    // lines of label once tiles get narrow at 4 or 5 columns.
+    minHeight: 118,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,

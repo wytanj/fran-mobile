@@ -1,7 +1,7 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -86,7 +86,7 @@ export function MemberIdScreen() {
                 accessibilityLabel="Copy member ID"
                 style={({ pressed }) => [styles.copyBtn, pressed && { opacity: 0.6 }]}
               >
-                <Ionicons name="copy-outline" size={15} color={colors.brown} />
+                <FranIcon name="copy" size={15} color={colors.brown} />
                 <Text style={styles.copyText}>Copy</Text>
               </Pressable>
             </View>
@@ -121,7 +121,7 @@ export function MemberIdScreen() {
           accessibilityLabel={`Use vouchers, ${availableVoucherCount} available`}
         >
           <View style={styles.vIcon}>
-            <Ionicons name="ticket" size={19} color={colors.brown} />
+            <FranIcon name="ticket" size={19} color={colors.brown} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.vTitle}>Use vouchers</Text>
@@ -129,11 +129,11 @@ export function MemberIdScreen() {
               {availableVoucherCount} ready to apply at checkout
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={17} color={colors.borderStrong} />
+          <FranIcon name="chevronRight" size={17} color={colors.borderStrong} />
         </PressableScale>
 
         <View style={styles.tipRow}>
-          <Ionicons name="information-circle-outline" size={14} color={colors.brownMuted} />
+          <FranIcon name="info" size={14} color={colors.brownMuted} />
           <Text style={styles.tip}>Screen brightness helps the scanner read your code.</Text>
         </View>
       </ContentWidth>

@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
@@ -61,7 +61,7 @@ export function TermsScreen({ navigation }: Props) {
           ]}
         >
           <View style={[styles.checkbox, accepted && styles.checkboxOn]}>
-            {accepted ? <Ionicons name="checkmark" size={15} color={colors.brown} /> : null}
+            {accepted ? <FranIcon name="check" size={15} color={colors.brown} /> : null}
           </View>
           <Text style={styles.checkText}>
             I accept the <Text style={styles.link}>Terms of Use</Text> and{' '}
@@ -70,7 +70,7 @@ export function TermsScreen({ navigation }: Props) {
         </Pressable>
         {error ? (
           <View style={styles.errorRow}>
-            <Ionicons name="alert-circle" size={14} color={colors.danger} />
+            <FranIcon name="alert" size={14} color={colors.danger} />
             <Text style={styles.error}>{error}</Text>
           </View>
         ) : null}

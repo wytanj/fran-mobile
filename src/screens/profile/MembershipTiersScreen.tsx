@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -68,7 +68,7 @@ function TierSlide({ tier, isCurrent }: { tier: TierInfo; isCurrent: boolean }) 
       <View style={styles.top}>
         {isCurrent ? (
           <View style={styles.myTier}>
-            <Ionicons name="star" size={9} color={colors.yellow} />
+            <FranIcon name="star" size={9} color={colors.yellow} />
             <Text style={styles.myTierText}>My tier</Text>
           </View>
         ) : (
@@ -84,7 +84,7 @@ function TierSlide({ tier, isCurrent }: { tier: TierInfo; isCurrent: boolean }) 
       <View style={styles.perks}>
         {tier.perks.map((p) => (
           <View key={p} style={styles.perkRow}>
-            <Ionicons name="checkmark-circle" size={18} color={tier.color} />
+            <FranIcon name="checkCircle" size={18} color={tier.color} />
             <Text style={styles.perkText}>{p}</Text>
           </View>
         ))}

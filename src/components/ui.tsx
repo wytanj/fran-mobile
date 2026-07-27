@@ -1,5 +1,5 @@
 import { Text, TextInput } from './ThemedText';
-import { Ionicons } from '@expo/vector-icons';
+import { FranIcon, type FranIconName } from './FranIcon';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -133,7 +133,7 @@ export function Header({
             accessibilityLabel="Go back"
             style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}
           >
-            <Ionicons name="chevron-back" size={22} color={colors.ink} />
+            <FranIcon name="chevronLeft" size={22} color={colors.ink} />
           </Pressable>
         ) : null}
       </View>
@@ -176,7 +176,7 @@ export function Button({
   disabled?: boolean;
   loading?: boolean;
   style?: StyleProp<ViewStyle>;
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: FranIconName;
   iconAfter?: boolean;
 }) {
   const isDisabled = disabled || loading;
@@ -187,7 +187,7 @@ export function Button({
       : colors.brown;
 
   const iconEl = icon ? (
-    <Ionicons
+    <FranIcon
       name={icon}
       size={size === 'sm' ? 16 : 18}
       color={fg}
@@ -270,7 +270,7 @@ export function Input({
       />
       {error ? (
         <View style={styles.inputErrorRow}>
-          <Ionicons name="alert-circle" size={13} color={colors.danger} />
+          <FranIcon name="alert" size={13} color={colors.danger} />
           <Text style={styles.inputErrorText}>{error}</Text>
         </View>
       ) : hint ? (
@@ -356,7 +356,7 @@ export function SectionTitle({
           style={({ pressed }) => [styles.sectionActionBtn, pressed && { opacity: 0.55 }]}
         >
           <Text style={styles.sectionAction}>{actionLabel}</Text>
-          <Ionicons name="chevron-forward" size={13} color={colors.brownSoft} />
+          <FranIcon name="chevronRight" size={13} color={colors.brownSoft} />
         </Pressable>
       ) : null}
     </View>
@@ -383,13 +383,13 @@ export function Badge({
 }: {
   label: string;
   tone?: BadgeTone;
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: FranIconName;
   style?: StyleProp<ViewStyle>;
 }) {
   const { bg, fg } = BADGE_TONES[tone];
   return (
     <View style={[styles.badge, { backgroundColor: bg }, style]}>
-      {icon ? <Ionicons name={icon} size={10} color={fg} style={{ marginRight: 4 }} /> : null}
+      {icon ? <FranIcon name={icon} size={11} color={fg} style={{ marginRight: 4 }} /> : null}
       <Text style={[styles.badgeText, { color: fg }]}>{label}</Text>
     </View>
   );
@@ -403,7 +403,7 @@ export function IconTile({
   iconSize,
   style,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: FranIconName;
   tone?: 'yellow' | 'blue' | 'peach' | 'cream' | 'brown' | 'danger';
   size?: number;
   iconSize?: number;
@@ -432,7 +432,7 @@ export function IconTile({
         style,
       ]}
     >
-      <Ionicons name={icon} size={iconSize ?? Math.round(size * 0.5)} color={map.fg} />
+      <FranIcon name={icon} size={iconSize ?? Math.round(size * 0.52)} color={map.fg} />
     </View>
   );
 }
@@ -591,7 +591,7 @@ export function ListRow({
 }: {
   title: string;
   subtitle?: string;
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: FranIconName;
   iconTone?: 'yellow' | 'blue' | 'peach' | 'cream';
   onPress?: () => void;
   right?: React.ReactNode;
@@ -616,25 +616,25 @@ export function ListRow({
       </View>
       {right}
       {onPress && !right ? (
-        <Ionicons name="chevron-forward" size={17} color={colors.borderStrong} />
+        <FranIcon name="chevronRight" size={17} color={colors.borderStrong} />
       ) : null}
     </Pressable>
   );
 }
 
 export function EmptyState({
-  icon = 'file-tray-outline',
+  icon = 'document',
   title,
   subtitle,
 }: {
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: FranIconName;
   title: string;
   subtitle?: string;
 }) {
   return (
     <View style={styles.empty}>
       <View style={styles.emptyIcon}>
-        <Ionicons name={icon} size={30} color={colors.brownMuted} />
+        <FranIcon name={icon} size={32} color={colors.brownMuted} />
       </View>
       <Text style={styles.emptyTitle}>{title}</Text>
       {subtitle ? <Text style={styles.emptySub}>{subtitle}</Text> : null}

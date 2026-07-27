@@ -1,6 +1,6 @@
 import { Text } from '../../components/ThemedText';
+import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, ProgressBar, Screen } from '../../components/ui';
@@ -114,7 +114,7 @@ export function QuizScreen({ navigation, route }: Props) {
                   ]}
                 >
                   {on ? (
-                    <Ionicons name="checkmark" size={13} color={colors.brown} />
+                    <FranIcon name="check" size={13} color={colors.brown} />
                   ) : null}
                   <Text style={[styles.chipText, on && styles.chipTextOn]}>{opt.label}</Text>
                 </Pressable>
