@@ -224,7 +224,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cream,
   },
   tabBar: {
-    height: 70,
+    // 8 top + 2 item + 38 icon slot + 3 + ~13 label + 10 bottom = 74, plus 2
+    // slack so a label descender can't clip if the font metrics run tall.
+    height: 76,
     paddingTop: 8,
     paddingBottom: 10,
     borderTopWidth: 1,
@@ -243,7 +245,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodySemi,
     fontSize: 10,
     letterSpacing: 0.2,
-    marginTop: 1,
+    marginTop: 3,
   },
   tabIcon: {
     width: 46,
@@ -262,10 +264,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
-    // Negative top margin lifts the button out of the bar. A positive
-    // marginBottom would lift it too, but it also pushes the "Member ID"
-    // label down into the button.
-    marginTop: -18,
+    // The button has to clear the bar without crowding its label, and those
+    // pull in opposite directions. marginTop lifts it; marginBottom is the
+    // gap the label sits below. Their sum is the height the button gives back
+    // to the column, so keep it at -16 (54 - 22 + 6 = 38, the icon slot).
+    marginTop: -22,
+    marginBottom: 6,
     borderWidth: 4,
     borderColor: colors.surface,
     shadowColor: colors.yellowDeep,
