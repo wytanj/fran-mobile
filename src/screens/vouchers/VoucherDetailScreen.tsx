@@ -3,10 +3,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Alert, LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Header, Screen } from '../../components/ui';
+import { Badge, Button, Header, Perforation, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import type { RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, tint, typography } from '../../theme';
+import { onFill } from '../../theme/contrast';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VoucherDetail'>;
 
@@ -27,6 +28,8 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
   }
 
   const past = voucher.status === 'used' || voucher.status === 'expired';
+  const fill = past ? colors.disabled : voucher.color;
+  const on = onFill(fill);
 
   const onPrimary = async () => {
     if (voucher.status === 'to_redeem') {
@@ -54,26 +57,71 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
   return (
     <Screen edges={['top', 'bottom']}>
       <Header title="Voucher" onBack={() => navigation.goBack()} />
-      <ScrollView contentContainerStyle={{ paddingBottom: spacing.xxl }}>
-        <View style={[styles.hero, { backgroundColor: past ? colors.disabled : voucher.color }]}>
-          <Text style={styles.value}>{voucher.valueLabel}</Text>
-          <Text style={styles.heroTitle}>{voucher.title}</Text>
-          <Text style={styles.heroSub}>{voucher.description}</Text>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: spacing.xxl }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Ticket — coloured stub, tear line, then the details */}
+        <View style={[styles.ticket, shadow.md]}>
+          <View style={[styles.stub, { backgroundColor: fill }]}>
+            <View style={styles.stubBloom} pointerEvents="none" />
+            <Text style={[styles.value, { color: on.primary }]}>{voucher.valueLabel}</Text>
+            <Text style={[styles.heroTitle, { color: on.primary }]}>{voucher.title}</Text>
+            <Text style={[styles.heroSub, { color: on.secondary }]}>{voucher.description}</Text>
+          </View>
+
+          <Perforation notchColor={colors.background} />
+
+          <View style={styles.ticketBody}>
+            <View style={styles.metaRow}>
+              <Text style={styles.metaLabel}>
+                {past ? (voucher.status === 'used' ? 'Used on' : 'Expired on') : 'Valid until'}
+              </Text>
+              <Text style={styles.metaValue}>
+                {past ? (voucher.usedAt ?? voucher.expiresAt ?? '—') : (voucher.expiresAt ?? 'No expiry')}
+              </Text>
+            </View>
+            {voucher.minSpend ? (
+              <View style={[styles.metaRow, styles.metaBorder]}>
+                <Text style={styles.metaLabel}>Minimum spend</Text>
+                <Text style={styles.metaValue}>${voucher.minSpend}</Text>
+              </View>
+            ) : null}
+            {voucher.pointsCost != null ? (
+              <View style={[styles.metaRow, styles.metaBorder]}>
+                <Text style={styles.metaLabel}>Cost</Text>
+                <Text style={styles.metaValue}>{voucher.pointsCost} pts</Text>
+              </View>
+            ) : null}
+            <View style={[styles.metaRow, styles.metaBorder]}>
+              <Text style={styles.metaLabel}>Status</Text>
+              <Badge
+                label={
+                  voucher.status === 'available'
+                    ? 'Ready to use'
+                    : voucher.status === 'to_redeem'
+                      ? 'Redeemable'
+                      : voucher.status === 'used'
+                        ? 'Used'
+                        : 'Expired'
+                }
+                tone={
+                  voucher.status === 'available'
+                    ? 'success'
+                    : voucher.status === 'to_redeem'
+                      ? 'primary'
+                      : 'muted'
+                }
+              />
+            </View>
+          </View>
         </View>
 
-        {voucher.expiresAt ? (
-          <Text style={styles.expiry}>
-            {past
-              ? voucher.status === 'used'
-                ? `Used on ${voucher.usedAt ?? voucher.expiresAt}`
-                : `Expired on ${voucher.expiresAt}`
-              : `Expires ${voucher.expiresAt}`}
-          </Text>
-        ) : null}
-
         {showQr && voucher.status === 'available' ? (
-          <View style={styles.qrCard}>
-            <Ionicons name="qr-code" size={120} color={colors.ink} />
+          <View style={[styles.qrCard, shadow.sm]}>
+            <View style={styles.qrFrame}>
+              <Ionicons name="qr-code" size={132} color={colors.ink} />
+            </View>
             <Text style={styles.qrHint}>Show this code at checkout</Text>
             <Text style={styles.qrId}>{user.memberId}</Text>
           </View>
@@ -84,18 +132,33 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             setTermsOpen((v) => !v);
           }}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: termsOpen }}
           style={styles.termsHeader}
         >
           <Text style={styles.termsTitle}>Terms & conditions</Text>
-          <Ionicons name={termsOpen ? 'chevron-up' : 'chevron-down'} size={18} color={colors.ink} />
+          <View style={styles.chevronWell}>
+            <Ionicons
+              name={termsOpen ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color={colors.brown}
+            />
+          </View>
         </Pressable>
-        {termsOpen
-          ? voucher.terms.map((t, i) => (
-              <Text key={i} style={styles.term}>
-                • {t}
-              </Text>
-            ))
-          : null}
+        {termsOpen ? (
+          <View style={styles.terms}>
+            {voucher.terms.length ? (
+              voucher.terms.map((t, i) => (
+                <View key={i} style={styles.termRow}>
+                  <View style={styles.termDot} />
+                  <Text style={styles.term}>{t}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.term}>No additional terms.</Text>
+            )}
+          </View>
+        ) : null}
       </ScrollView>
 
       {!past ? (
@@ -107,6 +170,7 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
                 ? 'Ready to scan'
                 : 'Use now'
           }
+          icon={showQr ? 'checkmark-circle' : undefined}
           onPress={onPrimary}
           loading={loading}
           disabled={showQr}
@@ -119,32 +183,88 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   missing: { ...typography.body, color: colors.muted },
-  hero: {
+  ticket: {
+    backgroundColor: colors.surface,
     borderRadius: radius.xl,
-    padding: spacing.xxl,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
     marginBottom: spacing.lg,
   },
-  value: { ...typography.hero, color: colors.brown },
-  heroTitle: { ...typography.h2, color: colors.brown, marginTop: spacing.sm },
-  heroSub: { ...typography.body, color: colors.brownSoft, marginTop: spacing.xs },
-  expiry: { ...typography.captionBold, color: colors.muted, marginBottom: spacing.lg },
+  stub: {
+    borderTopLeftRadius: radius.xl - 1,
+    borderTopRightRadius: radius.xl - 1,
+    padding: spacing.xxl,
+    overflow: 'hidden',
+  },
+  stubBloom: {
+    position: 'absolute',
+    top: -70,
+    right: -50,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: tint.lightVeil,
+    opacity: 0.3,
+  },
+  value: { ...typography.display },
+  heroTitle: { ...typography.h2, marginTop: spacing.sm },
+  heroSub: { ...typography.body, marginTop: 2 },
+  ticketBody: {
+    paddingHorizontal: spacing.xxl,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    gap: spacing.md,
+  },
+  metaBorder: { borderTopWidth: 1, borderTopColor: colors.borderSoft },
+  metaLabel: { ...typography.caption },
+  metaValue: { ...typography.captionBold },
   qrCard: {
     alignItems: 'center',
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     padding: spacing.xxl,
     marginBottom: spacing.lg,
   },
-  qrHint: { ...typography.caption, color: colors.muted, marginTop: spacing.md },
-  qrId: { ...typography.bodyBold, color: colors.ink, marginTop: spacing.xs, letterSpacing: 1 },
+  qrFrame: {
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    backgroundColor: colors.white,
+    borderWidth: 1.5,
+    borderColor: colors.yellow,
+  },
+  qrHint: { ...typography.caption, marginTop: spacing.lg },
+  qrId: { ...typography.bodyBold, marginTop: 2, letterSpacing: 1.5 },
   termsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: spacing.md,
   },
-  termsTitle: { ...typography.h3, color: colors.ink },
-  term: { ...typography.caption, color: colors.muted, marginBottom: spacing.xs, lineHeight: 20 },
+  termsTitle: { ...typography.h3 },
+  chevronWell: {
+    width: 30,
+    height: 30,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSunken,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  terms: { paddingBottom: spacing.md, gap: spacing.sm },
+  termRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  termDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.yellowDeep,
+    marginTop: 7,
+  },
+  term: { ...typography.caption, flex: 1, lineHeight: 20 },
 });

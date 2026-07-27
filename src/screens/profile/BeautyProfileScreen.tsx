@@ -3,15 +3,22 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Badge, Header, Screen } from '../../components/ui';
+import { Badge, Header, IconTile, ProgressBar, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { categoryLabels } from '../../data/quizQuestions';
 import type { BeautyCategory, RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, tint, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BeautyProfile'>;
 
 const cats: BeautyCategory[] = ['skin', 'makeup', 'hair', 'lifestyle'];
+
+const CAT_ICONS: Record<BeautyCategory, keyof typeof Ionicons.glyphMap> = {
+  skin: 'water-outline',
+  makeup: 'color-palette-outline',
+  hair: 'cut-outline',
+  lifestyle: 'leaf-outline',
+};
 
 export function BeautyProfileScreen({ navigation }: Props) {
   const { user } = useUser();
@@ -23,73 +30,85 @@ export function BeautyProfileScreen({ navigation }: Props) {
       <Text style={styles.intro}>
         Hi {user.name} — complete each category for better product guidance and +15 points each.
       </Text>
-      <Text style={styles.progress}>
-        {completed}/{cats.length} completed
-      </Text>
-      <View style={styles.list}>
-        {cats.map((cat) => {
+      <View style={styles.progressBlock}>
+        <ProgressBar value={completed / cats.length} height={8} />
+        <Text style={styles.progress}>
+          {completed} of {cats.length} completed
+        </Text>
+      </View>
+      <View style={[styles.list, shadow.sm]}>
+        {cats.map((cat, i) => {
           const done = !!user.beautyProfiles[cat];
           return (
             <Pressable
               key={cat}
-              style={styles.row}
+              accessibilityRole="button"
+              style={({ pressed }) => [
+                styles.row,
+                i < cats.length - 1 && styles.rowBorder,
+                pressed && { backgroundColor: tint.inkFaint },
+              ]}
               onPress={() =>
                 done
                   ? navigation.navigate('BeautyResults', { category: cat })
                   : navigation.navigate('Quiz', { category: cat })
               }
             >
+              <IconTile icon={CAT_ICONS[cat]} tone={done ? 'blue' : 'yellow'} size={40} />
               <View style={styles.left}>
                 <Text style={styles.name}>{categoryLabels[cat]}</Text>
-                <Badge
-                  label={done ? 'Completed' : 'Not completed'}
-                  tone={done ? 'success' : 'muted'}
-                />
+                <Badge label={done ? 'Completed' : '+15 pts'} tone={done ? 'success' : 'primary'} />
               </View>
               {done ? (
-                <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+                <Ionicons name="chevron-forward" size={17} color={colors.borderStrong} />
               ) : (
-                <Text style={styles.quizCta}>Take the quiz ›</Text>
+                <Text style={styles.quizCta}>Start ›</Text>
               )}
             </Pressable>
           );
         })}
       </View>
       <View style={styles.soon}>
-        <Text style={styles.soonTitle}>My recommendations</Text>
-        <Text style={styles.soonSub}>Coming soon</Text>
+        <View style={styles.soonRow}>
+          <Ionicons name="sparkles-outline" size={17} color={colors.brownMuted} />
+          <Text style={styles.soonTitle}>My recommendations</Text>
+        </View>
+        <Text style={styles.soonSub}>
+          Once your profile is complete we'll surface picks matched to it.
+        </Text>
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  intro: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.md },
-  progress: { ...typography.captionBold, color: colors.brown, marginBottom: spacing.lg },
+  intro: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.lg },
+  progressBlock: { gap: spacing.sm, marginBottom: spacing.xl },
+  progress: { ...typography.eyebrow },
   list: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: spacing.md,
     padding: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
-  left: { gap: spacing.sm },
-  name: { ...typography.bodyBold, color: colors.ink },
+  rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+  left: { flex: 1, gap: spacing.sm, alignItems: 'flex-start' },
+  name: { ...typography.title },
   quizCta: { ...typography.captionBold, color: colors.brown },
   soon: {
     marginTop: spacing.xl,
     padding: spacing.lg,
-    borderRadius: radius.lg,
-    backgroundColor: colors.cream,
+    borderRadius: radius.xl,
+    backgroundColor: colors.surfaceSunken,
   },
-  soonTitle: { ...typography.bodyBold, color: colors.inkSoft },
-  soonSub: { ...typography.caption, color: colors.muted, marginTop: 4 },
+  soonRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  soonTitle: { ...typography.title, color: colors.inkSoft },
+  soonSub: { ...typography.caption, marginTop: spacing.xs },
 });

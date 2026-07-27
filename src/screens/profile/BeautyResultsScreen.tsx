@@ -1,12 +1,13 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Header, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { buildResultsCopy, categoryLabels } from '../../data/quizQuestions';
 import type { RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BeautyResults'>;
 
@@ -24,11 +25,15 @@ export function BeautyResultsScreen({ navigation, route }: Props) {
         title={categoryLabels[category]}
         onBack={() => navigation.goBack()}
       />
-      <ScrollView contentContainerStyle={{ paddingBottom: spacing.huge }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: spacing.huge }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.eyebrow}>Your result</Text>
         <Text style={styles.title}>{copy.title}</Text>
-        <View style={styles.card}>
-          {copy.rows.map((r) => (
-            <View key={r.label} style={styles.row}>
+        <View style={[styles.card, shadow.sm]}>
+          {copy.rows.map((r, i) => (
+            <View key={r.label} style={[styles.row, i < copy.rows.length - 1 && styles.rowBorder]}>
               <Text style={styles.label}>{r.label}</Text>
               <Text style={styles.value}>{r.value}</Text>
             </View>
@@ -39,6 +44,9 @@ export function BeautyResultsScreen({ navigation, route }: Props) {
             <Text style={styles.section}>Tips for you</Text>
             {copy.tips.map((t) => (
               <View key={t} style={styles.tip}>
+                <View style={styles.tipIcon}>
+                  <Ionicons name="bulb-outline" size={15} color={colors.brown} />
+                </View>
                 <Text style={styles.tipText}>{t}</Text>
               </View>
             ))}
@@ -50,27 +58,37 @@ export function BeautyResultsScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  title: { ...typography.h2, color: colors.ink, marginBottom: spacing.lg },
+  eyebrow: { ...typography.eyebrow },
+  title: { ...typography.h1, marginTop: 4, marginBottom: spacing.lg },
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
+    borderColor: colors.borderSoft,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
   },
-  row: {
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  label: { ...typography.caption, color: colors.muted },
-  value: { ...typography.bodyBold, color: colors.ink, marginTop: 2, textTransform: 'capitalize' },
-  section: { ...typography.h3, color: colors.ink, marginTop: spacing.xl, marginBottom: spacing.md },
+  row: { paddingVertical: spacing.md },
+  rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+  label: { ...typography.eyebrow },
+  value: { ...typography.title, marginTop: 3, textTransform: 'capitalize' },
+  section: { ...typography.h3, marginTop: spacing.xxl, marginBottom: spacing.md },
   tip: {
-    backgroundColor: colors.accentSoft,
-    borderRadius: radius.md,
-    padding: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.md,
+    backgroundColor: colors.blueSoft,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     marginBottom: spacing.sm,
   },
-  tipText: { ...typography.body, color: colors.inkSoft },
+  tipIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: radius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tipText: { ...typography.body, color: colors.inkSoft, flex: 1 },
 });

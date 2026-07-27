@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import type { OnboardingStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, fonts, radius, spacing, typography } from '../../theme';
 import { signupDraft } from './NameScreen';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Terms'>;
@@ -52,17 +52,28 @@ export function TermsScreen({ navigation }: Props) {
             setAccepted((v) => !v);
             setError('');
           }}
-          style={[styles.checkRow, accepted && styles.checkRowOn]}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: accepted }}
+          style={({ pressed }) => [
+            styles.checkRow,
+            accepted && styles.checkRowOn,
+            pressed && !accepted && { backgroundColor: colors.surfaceSunken },
+          ]}
         >
           <View style={[styles.checkbox, accepted && styles.checkboxOn]}>
-            {accepted ? <Ionicons name="checkmark" size={16} color={colors.brown} /> : null}
+            {accepted ? <Ionicons name="checkmark" size={15} color={colors.brown} /> : null}
           </View>
           <Text style={styles.checkText}>
             I accept the <Text style={styles.link}>Terms of Use</Text> and{' '}
             <Text style={styles.link}>Privacy Policy</Text>
           </Text>
         </Pressable>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? (
+          <View style={styles.errorRow}>
+            <Ionicons name="alert-circle" size={14} color={colors.danger} />
+            <Text style={styles.error}>{error}</Text>
+          </View>
+        ) : null}
       </View>
       <Button
         title="Create account"
@@ -77,7 +88,7 @@ export function TermsScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   content: { flex: 1, paddingTop: spacing.lg },
-  title: { ...typography.h1, color: colors.ink, marginBottom: spacing.sm },
+  title: { ...typography.h1, marginBottom: spacing.sm },
   sub: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xxl },
   checkRow: {
     flexDirection: 'row',
@@ -85,8 +96,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.lg,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderWidth: 1.5,
+    borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   checkRowOn: {
@@ -94,11 +105,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellowSoft,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
+    width: 23,
+    height: 23,
+    borderRadius: radius.xs,
     borderWidth: 1.5,
     borderColor: colors.borderStrong,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,
@@ -107,7 +119,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellow,
     borderColor: colors.yellowDeep,
   },
-  checkText: { ...typography.body, color: colors.ink, flex: 1 },
-  link: { color: colors.brown, fontWeight: '600' },
-  error: { ...typography.caption, color: colors.danger, marginTop: spacing.sm },
+  checkText: { ...typography.body, flex: 1 },
+  link: { fontFamily: fonts.bodySemi, color: colors.brown },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: spacing.md },
+  error: { ...typography.caption, color: colors.danger },
 });

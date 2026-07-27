@@ -3,7 +3,12 @@
  * Palette: yellow · pale yellow · sky blue · cream · peach · tan · brown
  * Type: Marr Sans Condensed (display) → Barlow Condensed
  *       Symbol (body) → DM Sans
+ *
+ * Palette hexes and font families are fixed by the brand. Everything else here
+ * (scale, elevation, radii, tints) is tuned for feel.
  */
+
+import type { TextStyle, ViewStyle } from 'react-native';
 
 export const fonts = {
   /** Platform — bold retail display */
@@ -43,9 +48,13 @@ export const colors = {
   ink: '#3A2415',
   inkSoft: '#5C4030',
   muted: '#8B7355',
+  /** Hairline — barely there, for grouped rows and card edges */
+  borderSoft: '#F4EDDF',
   border: '#EDE4D4',
   borderStrong: '#D9CDB8',
   surface: '#FFFFFF',
+  /** Recessed wells inside white cards */
+  surfaceSunken: '#FBF7EE',
   background: '#FFFEF5',
 
   // Semantic
@@ -75,6 +84,25 @@ export const colors = {
   tabInactive: '#8B7355',
 };
 
+/**
+ * Transparent washes derived from the palette. Layering these instead of
+ * introducing new solid greys is what keeps surfaces feeling warm.
+ */
+export const tint = {
+  /** Pressed-state wash on light surfaces */
+  inkFaint: 'rgba(58, 36, 21, 0.04)',
+  inkWash: 'rgba(58, 36, 21, 0.07)',
+  inkPress: 'rgba(58, 36, 21, 0.11)',
+  /** Dividers on coloured cards, where a solid border would read as a seam */
+  inkLine: 'rgba(58, 36, 21, 0.10)',
+  inkTrack: 'rgba(58, 36, 21, 0.09)',
+  yellowWash: 'rgba(255, 225, 77, 0.28)',
+  blueWash: 'rgba(91, 191, 224, 0.16)',
+  /** Highlights on top of yellow / brown fills */
+  lightVeil: 'rgba(255, 255, 255, 0.55)',
+  lightLine: 'rgba(255, 255, 255, 0.28)',
+};
+
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -84,98 +112,174 @@ export const spacing = {
   xxl: 24,
   xxxl: 32,
   huge: 40,
+  giant: 56,
 };
 
 export const radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
+  xs: 6,
+  sm: 10,
+  md: 14,
+  lg: 18,
+  xl: 24,
+  xxl: 32,
   full: 999,
 };
 
 export const typography = {
+  /** Editorial page opener */
+  display: {
+    fontFamily: fonts.displayExtra,
+    fontSize: 40,
+    lineHeight: 42,
+    letterSpacing: -0.8,
+    color: colors.ink,
+  },
   hero: {
     fontFamily: fonts.displayExtra,
     fontSize: 36,
-    letterSpacing: -0.5,
+    lineHeight: 38,
+    letterSpacing: -0.6,
     color: colors.ink,
   },
   h1: {
     fontFamily: fonts.display,
     fontSize: 28,
-    letterSpacing: -0.3,
+    lineHeight: 32,
+    letterSpacing: -0.4,
     color: colors.ink,
   },
   h2: {
     fontFamily: fonts.display,
     fontSize: 22,
-    letterSpacing: -0.2,
+    lineHeight: 27,
+    letterSpacing: -0.25,
     color: colors.ink,
   },
   h3: {
     fontFamily: fonts.displayMedium,
     fontSize: 18,
+    lineHeight: 23,
+    letterSpacing: -0.1,
+    color: colors.ink,
+  },
+  /** Card / row heading in body type — pairs with caption underneath */
+  title: {
+    fontFamily: fonts.bodySemi,
+    fontSize: 16,
+    lineHeight: 21,
+    letterSpacing: -0.1,
     color: colors.ink,
   },
   body: {
     fontFamily: fonts.body,
     fontSize: 15,
-    lineHeight: 22,
+    lineHeight: 23,
     color: colors.ink,
   },
   bodyBold: {
     fontFamily: fonts.bodySemi,
     fontSize: 15,
-    lineHeight: 22,
+    lineHeight: 23,
     color: colors.ink,
   },
   caption: {
     fontFamily: fonts.body,
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 19,
     color: colors.muted,
   },
   captionBold: {
     fontFamily: fonts.bodySemi,
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 19,
     color: colors.ink,
   },
   micro: {
     fontFamily: fonts.bodyMedium,
     fontSize: 11,
-    letterSpacing: 0.4,
+    lineHeight: 15,
+    letterSpacing: 0.3,
     color: colors.muted,
   },
   label: {
     fontFamily: fonts.bodySemi,
     fontSize: 12,
-    letterSpacing: 0.5,
+    lineHeight: 16,
+    letterSpacing: 0.4,
     color: colors.inkSoft,
   },
-};
+  /** All-caps kicker above a section or inside a coloured card */
+  eyebrow: {
+    fontFamily: fonts.bodySemi,
+    fontSize: 11,
+    lineHeight: 14,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    color: colors.muted,
+  },
+  /** Big standalone figures — points balances, voucher values */
+  numeral: {
+    fontFamily: fonts.displayExtra,
+    fontSize: 38,
+    lineHeight: 40,
+    letterSpacing: -1,
+    color: colors.ink,
+  },
+  button: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: 0.2,
+  },
+} satisfies Record<string, TextStyle>;
 
+/**
+ * Warm, wide-blur elevation. Shadows are brown rather than black so cards
+ * settle onto cream instead of punching a grey hole in it.
+ */
 export const shadow = {
-  sm: {
+  xs: {
     shadowColor: colors.brown,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.04,
     shadowRadius: 3,
+    elevation: 1,
+  },
+  sm: {
+    shadowColor: colors.brown,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
     elevation: 2,
   },
   md: {
     shadowColor: colors.brown,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.09,
+    shadowRadius: 20,
+    elevation: 5,
   },
   lg: {
     shadowColor: colors.brown,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 20,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.13,
+    shadowRadius: 34,
+    elevation: 10,
   },
+  /** Yellow bloom under primary CTAs */
+  glow: {
+    shadowColor: colors.yellowDeep,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.34,
+    shadowRadius: 14,
+    elevation: 4,
+  },
+} satisfies Record<string, ViewStyle>;
+
+/** Shared press feel — one spring config so every tap reads the same */
+export const press = {
+  scale: 0.975,
+  /** Deeper squeeze for large tap targets (banners, hero cards) */
+  scaleLarge: 0.99,
+  spring: { speed: 40, bounciness: 0 },
 };

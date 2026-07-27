@@ -1,14 +1,21 @@
 import { Text, TextInput } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Header, Screen } from '../../components/ui';
 import type { RootStackParamList } from '../../types';
 import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Feedback'>;
 
-const RATINGS = ['Very satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very dissatisfied'];
+const RATINGS: { label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { label: 'Very satisfied', icon: 'happy-outline' },
+  { label: 'Satisfied', icon: 'thumbs-up-outline' },
+  { label: 'Neutral', icon: 'remove-circle-outline' },
+  { label: 'Dissatisfied', icon: 'thumbs-down-outline' },
+  { label: 'Very dissatisfied', icon: 'sad-outline' },
+];
 
 export function FeedbackScreen({ navigation }: Props) {
   const [rating, setRating] = useState<string | null>(null);
@@ -21,28 +28,50 @@ export function FeedbackScreen({ navigation }: Props) {
         Thank you for shopping at Fran. Help us improve your in-store and app experience — your
         responses are reviewed by our retail ops team.
       </Text>
-      <Text style={styles.label}>Overall satisfaction</Text>
-      <View style={styles.ratings}>
-        {RATINGS.map((r) => (
-          <Button
-            key={r}
-            title={r}
-            variant={rating === r ? 'primary' : 'secondary'}
-            onPress={() => setRating(r)}
-            style={styles.rateBtn}
-          />
-        ))}
-      </View>
-      <Text style={styles.label}>Comments (optional)</Text>
-      <TextInput
-        style={styles.area}
-        multiline
-        placeholder="Share feedback about your visit or the app"
-        placeholderTextColor={colors.muted}
-        value={comment}
-        onChangeText={setComment}
-        textAlignVertical="top"
-      />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: spacing.xl }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.label}>Overall satisfaction</Text>
+        <View style={styles.ratings}>
+          {RATINGS.map((r) => {
+            const on = rating === r.label;
+            return (
+              <Pressable
+                key={r.label}
+                onPress={() => setRating(r.label)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                style={({ pressed }) => [
+                  styles.rateRow,
+                  on && styles.rateRowOn,
+                  pressed && !on && { backgroundColor: colors.surfaceSunken },
+                ]}
+              >
+                <Ionicons
+                  name={r.icon}
+                  size={20}
+                  color={on ? colors.brown : colors.brownMuted}
+                />
+                <Text style={[styles.rateText, on && styles.rateTextOn]}>{r.label}</Text>
+                {on ? <Ionicons name="checkmark-circle" size={19} color={colors.brown} /> : null}
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <Text style={styles.label}>Comments (optional)</Text>
+        <TextInput
+          style={styles.area}
+          multiline
+          placeholder="Share feedback about your visit or the app"
+          placeholderTextColor={colors.brownMuted}
+          value={comment}
+          onChangeText={setComment}
+          textAlignVertical="top"
+        />
+      </ScrollView>
       <Button
         title="Submit feedback"
         onPress={() => {
@@ -53,7 +82,7 @@ export function FeedbackScreen({ navigation }: Props) {
           Alert.alert('Thank you', 'Your feedback has been recorded.');
           navigation.goBack();
         }}
-        style={{ marginTop: spacing.lg }}
+        style={{ marginTop: spacing.md, marginBottom: spacing.lg }}
       />
     </Screen>
   );
@@ -61,17 +90,32 @@ export function FeedbackScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   intro: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xl },
-  label: { ...typography.captionBold, color: colors.inkSoft, marginBottom: spacing.sm },
+  label: { ...typography.eyebrow, marginBottom: spacing.sm },
   ratings: { gap: spacing.sm, marginBottom: spacing.xl },
-  rateBtn: { height: 44 },
+  rateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    height: 52,
+    borderRadius: radius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  rateRowOn: {
+    borderColor: colors.yellowDeep,
+    backgroundColor: colors.yellowSoft,
+  },
+  rateText: { ...typography.title, flex: 1, color: colors.inkSoft },
+  rateTextOn: { color: colors.brown },
   area: {
-    minHeight: 120,
+    minHeight: 130,
     borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderWidth: 1.5,
+    borderColor: colors.border,
     backgroundColor: colors.surface,
     padding: spacing.lg,
     ...typography.body,
-    color: colors.ink,
   },
 });

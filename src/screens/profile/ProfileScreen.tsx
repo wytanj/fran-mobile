@@ -3,14 +3,29 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from 'react-native';
-import { Badge, Card, Screen, SectionTitle } from '../../components/ui';
+import {
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  UIManager,
+  View,
+} from 'react-native';
+import {
+  Badge,
+  Card,
+  PressableScale,
+  ProgressBar,
+  Screen,
+  SectionTitle,
+} from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { earnActions, tiers } from '../../data/mock';
 import { categoryLabels } from '../../data/quizQuestions';
 import { useLayout } from '../../layout/useLayout';
 import type { BeautyCategory, RootStackParamList } from '../../types';
-import { colors, radius, shadow, spacing, typography } from '../../theme';
+import { colors, press, radius, shadow, spacing, tint, typography } from '../../theme';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -31,104 +46,124 @@ export function ProfileScreen() {
 
   const beautyCats: BeautyCategory[] = ['skin', 'makeup', 'hair', 'lifestyle'];
   const earnTileWidth = `${Math.floor(100 / earnColumns) - 1}%` as `${number}%`;
+  const beautyDone = beautyCats.filter((c) => !!user.beautyProfiles[c]).length;
 
   return (
     <Screen padded={false} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View style={[styles.pad, { paddingHorizontal: gutter }]}>
+        <View style={{ paddingHorizontal: gutter }}>
+          <Text style={styles.pageEyebrow}>Membership</Text>
           <Text style={styles.pageTitle}>Profile</Text>
 
           {/* Tier card */}
-          <Pressable onPress={() => navigation.navigate('MembershipTiers')}>
-            <View style={[styles.tierCard, { backgroundColor: tierInfo.bgColor }, shadow.md]}>
-              <View style={styles.tierTop}>
-                <View>
-                  <Text style={[styles.tierName, { color: tierInfo.color }]}>{tierInfo.name}</Text>
-                  <Text style={styles.viewBenefits}>View my benefits ›</Text>
-                  {user.tierExpiresAt ? (
-                    <Text style={styles.expires}>Expires on {user.tierExpiresAt}</Text>
-                  ) : null}
+          <PressableScale
+            onPress={() => navigation.navigate('MembershipTiers')}
+            scaleTo={press.scaleLarge}
+            accessibilityLabel={`${tierInfo.name}, view benefits`}
+            style={[styles.tierCard, { backgroundColor: tierInfo.bgColor }, shadow.md]}
+          >
+            <View style={[styles.tierBloom, { backgroundColor: tierInfo.color }]} />
+            <View style={styles.tierTop}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tierEyebrow}>Your tier</Text>
+                <Text style={[styles.tierName, { color: tierInfo.color }]}>{tierInfo.name}</Text>
+                <View style={styles.benefitsRow}>
+                  <Text style={styles.viewBenefits}>View my benefits</Text>
+                  <Ionicons name="chevron-forward" size={13} color={colors.inkSoft} />
                 </View>
-                <View style={[styles.tierBadge, { backgroundColor: tierInfo.color }]}>
-                  <Text style={styles.tierBadgeText}>T{user.tier}</Text>
-                </View>
+                {user.tierExpiresAt ? (
+                  <Text style={styles.expires}>Expires on {user.tierExpiresAt}</Text>
+                ) : null}
               </View>
+              <View style={[styles.tierBadge, { backgroundColor: tierInfo.color }]}>
+                <Text style={styles.tierBadgeText}>T{user.tier}</Text>
+              </View>
+            </View>
 
-              {/* Progress tracker Tier 1–3 */}
-              <View style={styles.track}>
-                {tiers.map((t, i) => {
-                  const active = user.tier >= t.tier;
-                  return (
-                    <React.Fragment key={t.tier}>
-                      <View style={styles.trackNode}>
-                        <View
-                          style={[
-                            styles.node,
-                            active && { backgroundColor: t.color, borderColor: t.color },
-                          ]}
-                        >
-                          {active ? (
-                            <Ionicons name="checkmark" size={12} color={colors.brown} />
-                          ) : (
-                            <Text style={styles.nodeNum}>{t.tier}</Text>
-                          )}
-                        </View>
-                        <Text style={[styles.nodeLabel, active && { color: colors.ink }]}>
-                          {t.name}
-                        </Text>
+            {/* Progress tracker Tier 1–3 */}
+            <View style={styles.track}>
+              {tiers.map((t, i) => {
+                const active = user.tier >= t.tier;
+                return (
+                  <React.Fragment key={t.tier}>
+                    <View style={styles.trackNode}>
+                      <View
+                        style={[
+                          styles.node,
+                          active && { backgroundColor: t.color, borderColor: t.color },
+                        ]}
+                      >
+                        {active ? (
+                          <Ionicons name="checkmark" size={13} color={colors.brown} />
+                        ) : (
+                          <Text style={styles.nodeNum}>{t.tier}</Text>
+                        )}
                       </View>
-                      {i < tiers.length - 1 ? (
-                        <View
-                          style={[
-                            styles.trackLine,
-                            user.tier > t.tier && { backgroundColor: colors.yellow },
-                          ]}
-                        />
-                      ) : null}
-                    </React.Fragment>
-                  );
-                })}
-              </View>
+                      <Text style={[styles.nodeLabel, active && styles.nodeLabelOn]}>{t.name}</Text>
+                    </View>
+                    {i < tiers.length - 1 ? (
+                      <View
+                        style={[
+                          styles.trackLine,
+                          user.tier > t.tier && { backgroundColor: colors.yellowDeep },
+                        ]}
+                      />
+                    ) : null}
+                  </React.Fragment>
+                );
+              })}
+            </View>
 
-              {nextTier ? (
-                <View style={styles.spendBarWrap}>
-                  <View style={styles.spendBarBg}>
-                    <View style={[styles.spendBarFill, { width: `${progress * 100}%` }]} />
-                  </View>
+            {nextTier ? (
+              <View style={styles.spendBarWrap}>
+                <ProgressBar value={progress} height={8} />
+                <View style={styles.spendRow}>
                   <Text style={styles.spendHint}>
                     ${spendToNext} more to unlock {nextTier.name}
                   </Text>
+                  <Text style={styles.spendNow}>${user.yearlySpend}</Text>
                 </View>
-              ) : (
-                <Text style={styles.spendHint}>You're at the top tier — enjoy the perks!</Text>
-              )}
-            </View>
-          </Pressable>
+              </View>
+            ) : (
+              <Text style={styles.spendHint}>You're at the top tier — enjoy the perks!</Text>
+            )}
+          </PressableScale>
 
           {/* Points + vouchers */}
           <View style={styles.statsRow}>
-            <Pressable
+            <PressableScale
               style={[styles.statCard, shadow.sm]}
               onPress={() => navigation.navigate('Transactions')}
+              accessibilityLabel={`${user.points} points, view history`}
             >
-              <Text style={styles.statLabel}>Points</Text>
+              <View style={styles.statHead}>
+                <Text style={styles.statLabel}>Points</Text>
+                <Ionicons name="diamond" size={13} color={colors.yellowDeep} />
+              </View>
               <Text style={styles.statValue}>{user.points}</Text>
               {user.pointsExpiringSoon > 0 && user.tier === 1 ? (
-                <Pressable onPress={() => navigation.navigate('ExpiringPoints')}>
-                  <Text style={styles.statWarn}>{user.pointsExpiringSoon} expiring soon</Text>
+                <Pressable
+                  onPress={() => navigation.navigate('ExpiringPoints')}
+                  style={styles.statWarnChip}
+                >
+                  <Text style={styles.statWarn}>{user.pointsExpiringSoon} expiring</Text>
                 </Pressable>
               ) : (
                 <Text style={styles.statMuted}>Tap for history</Text>
               )}
-            </Pressable>
-            <Pressable
+            </PressableScale>
+            <PressableScale
               style={[styles.statCard, shadow.sm]}
               onPress={() => navigation.getParent()?.navigate('Vouchers' as never)}
+              accessibilityLabel={`${availableVoucherCount} vouchers available`}
             >
-              <Text style={styles.statLabel}>Vouchers</Text>
+              <View style={styles.statHead}>
+                <Text style={styles.statLabel}>Vouchers</Text>
+                <Ionicons name="ticket" size={13} color={colors.blue} />
+              </View>
               <Text style={styles.statValue}>{availableVoucherCount}</Text>
               <Text style={styles.statMuted}>Available to use</Text>
-            </Pressable>
+            </PressableScale>
           </View>
 
           {/* More ways to earn — collapsible */}
@@ -137,23 +172,31 @@ export function ProfileScreen() {
               LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
               setEarnOpen((v) => !v);
             }}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: earnOpen }}
             style={styles.collapseHeader}
           >
-            <Text style={styles.sectionH}>More ways to earn points</Text>
-            <Ionicons
-              name={earnOpen ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.ink}
-            />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sectionEyebrow}>Quick wins</Text>
+              <Text style={styles.sectionH}>More ways to earn points</Text>
+            </View>
+            <View style={styles.chevronWell}>
+              <Ionicons
+                name={earnOpen ? 'chevron-up' : 'chevron-down'}
+                size={17}
+                color={colors.brown}
+              />
+            </View>
           </Pressable>
           {earnOpen ? (
             <View style={styles.earnGrid}>
               {earnActions.map((a) => {
                 const done = a.oneTime && !!user.earnActionsCompleted[a.id];
                 return (
-                  <Pressable
+                  <PressableScale
                     key={a.id}
                     disabled={done}
+                    accessibilityLabel={`${a.title}, ${done ? 'done' : `plus ${a.points} points`}`}
                     onPress={() => {
                       if (a.kind === 'checkin') {
                         // switch tab — navigate parent
@@ -172,35 +215,39 @@ export function ProfileScreen() {
                         navigation.navigate('EarnPoints');
                       }
                     }}
-                    style={[
-                      styles.earnItem,
-                      { width: earnTileWidth },
-                      done && styles.earnItemDone,
-                    ]}
+                    style={[styles.earnItem, { width: earnTileWidth }, done && styles.earnItemDone]}
                   >
-                    <Ionicons
-                      name={a.icon as any}
-                      size={22}
-                      color={done ? colors.disabled : colors.brown}
-                    />
+                    <View style={[styles.earnIcon, done && styles.earnIconDone]}>
+                      <Ionicons
+                        name={a.icon as any}
+                        size={19}
+                        color={done ? colors.brownMuted : colors.brown}
+                      />
+                    </View>
                     <Text style={[styles.earnTitle, done && styles.earnDoneText]} numberOfLines={2}>
                       {a.title}
                     </Text>
-                    <Text style={[styles.earnPts, done && styles.earnDoneText]}>
-                      {done ? 'Done' : `+${a.points}`}
-                    </Text>
-                  </Pressable>
+                    {done ? (
+                      <View style={styles.earnDonePill}>
+                        <Ionicons name="checkmark" size={11} color={colors.success} />
+                        <Text style={styles.earnDoneLabel}>Done</Text>
+                      </View>
+                    ) : (
+                      <Text style={styles.earnPts}>+{a.points}</Text>
+                    )}
+                  </PressableScale>
                 );
               })}
             </View>
           ) : null}
 
           <SectionTitle
+            eyebrow={`${beautyDone} of ${beautyCats.length} complete`}
             title="My beauty profile"
             actionLabel="See all"
             onAction={() => navigation.navigate('BeautyProfile')}
           />
-          <Card>
+          <Card padded={false} style={styles.beautyCard}>
             {beautyCats.map((cat, i) => {
               const done = !!user.beautyProfiles[cat];
               return (
@@ -211,21 +258,36 @@ export function ProfileScreen() {
                       ? navigation.navigate('BeautyResults', { category: cat })
                       : navigation.navigate('Quiz', { category: cat })
                   }
-                  style={[styles.beautyRow, i < beautyCats.length - 1 && styles.beautyBorder]}
+                  accessibilityRole="button"
+                  style={({ pressed }) => [
+                    styles.beautyRow,
+                    i < beautyCats.length - 1 && styles.beautyBorder,
+                    pressed && { backgroundColor: tint.inkFaint },
+                  ]}
                 >
+                  <View style={[styles.beautyDot, done && styles.beautyDotOn]} />
                   <Text style={styles.beautyName}>{categoryLabels[cat]}</Text>
                   <View style={styles.beautyRight}>
-                    <Badge label={done ? 'Completed' : 'Not completed'} tone={done ? 'success' : 'muted'} />
-                    <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+                    <Badge
+                      label={done ? 'Completed' : '+15 pts'}
+                      tone={done ? 'success' : 'primary'}
+                    />
+                    <Ionicons name="chevron-forward" size={15} color={colors.borderStrong} />
                   </View>
                 </Pressable>
               );
             })}
           </Card>
 
-          <Card style={{ marginTop: spacing.lg, opacity: 0.7 }}>
-            <Text style={styles.comingSoonTitle}>My recommendations</Text>
-            <Text style={styles.comingSoonSub}>Coming soon — personalized picks from your beauty profile.</Text>
+          <Card tone="sunken" elevation="none" style={styles.comingSoon}>
+            <View style={styles.comingSoonRow}>
+              <Ionicons name="sparkles-outline" size={18} color={colors.brownMuted} />
+              <Text style={styles.comingSoonTitle}>My recommendations</Text>
+              <Badge label="Soon" tone="muted" />
+            </View>
+            <Text style={styles.comingSoonSub}>
+              Personalized picks from your beauty profile, coming shortly.
+            </Text>
           </Card>
         </View>
       </ScrollView>
@@ -235,17 +297,29 @@ export function ProfileScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingBottom: spacing.huge },
-  pad: {},
-  pageTitle: { ...typography.h1, color: colors.ink, marginBottom: spacing.lg, marginTop: spacing.sm },
+  pageEyebrow: { ...typography.eyebrow, marginTop: spacing.md },
+  pageTitle: { ...typography.h1, marginTop: 4, marginBottom: spacing.xl },
   tierCard: {
-    borderRadius: radius.xl,
-    padding: spacing.xl,
+    borderRadius: radius.xxl,
+    padding: spacing.xxl,
     marginBottom: spacing.lg,
+    overflow: 'hidden',
   },
-  tierTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.lg },
-  tierName: { ...typography.h2 },
-  viewBenefits: { ...typography.captionBold, color: colors.inkSoft, marginTop: 4 },
-  expires: { ...typography.caption, color: colors.muted, marginTop: 2 },
+  tierBloom: {
+    position: 'absolute',
+    top: -90,
+    right: -70,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    opacity: 0.14,
+  },
+  tierTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xl },
+  tierEyebrow: { ...typography.eyebrow, color: colors.brownMuted },
+  tierName: { ...typography.h1, marginTop: 3 },
+  benefitsRow: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 4 },
+  viewBenefits: { ...typography.captionBold, color: colors.inkSoft },
+  expires: { ...typography.micro, marginTop: 3 },
   tierBadge: {
     width: 48,
     height: 48,
@@ -258,7 +332,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   trackNode: { alignItems: 'center', width: 64 },
   node: {
@@ -266,89 +340,124 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     borderWidth: 2,
-    borderColor: colors.borderStrong,
+    borderColor: tint.inkLine,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  nodeNum: { ...typography.micro, color: colors.muted },
-  nodeLabel: { ...typography.micro, color: colors.muted, marginTop: 4 },
+  nodeNum: { ...typography.micro, color: colors.brownMuted },
+  nodeLabel: { ...typography.micro, marginTop: 5 },
+  nodeLabelOn: { color: colors.ink },
   trackLine: {
     flex: 1,
-    height: 2,
-    backgroundColor: colors.borderStrong,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: tint.inkLine,
     marginTop: 13,
   },
   spendBarWrap: { gap: spacing.sm },
-  spendBarBg: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(0,0,0,0.08)',
-    overflow: 'hidden',
-  },
-  spendBarFill: {
-    height: '100%',
-    backgroundColor: colors.yellow,
-    borderRadius: 4,
-  },
-  spendHint: { ...typography.caption, color: colors.inkSoft },
-  statsRow: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg },
+  spendRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  spendHint: { ...typography.caption, color: colors.inkSoft, flex: 1 },
+  spendNow: { ...typography.captionBold, color: colors.brown },
+  statsRow: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.sm },
   statCard: {
     flex: 1,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
   },
-  statLabel: { ...typography.caption, color: colors.muted },
-  statValue: { ...typography.h1, color: colors.brown, marginTop: 2 },
-  statWarn: { ...typography.captionBold, color: colors.warning, marginTop: 4 },
-  statMuted: { ...typography.caption, color: colors.muted, marginTop: 4 },
+  statHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  statLabel: { ...typography.eyebrow },
+  statValue: { ...typography.hero, color: colors.brown, marginTop: 4 },
+  statWarnChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.warningSoft,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.full,
+    marginTop: spacing.sm,
+  },
+  statWarn: { ...typography.micro, color: colors.warning },
+  statMuted: { ...typography.micro, marginTop: spacing.sm },
   collapseHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: spacing.md,
+    marginTop: spacing.xxl,
     marginBottom: spacing.md,
   },
-  sectionH: { ...typography.h3, color: colors.ink },
+  sectionEyebrow: { ...typography.eyebrow, marginBottom: 3 },
+  sectionH: { ...typography.h3 },
+  chevronWell: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSunken,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   earnGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginBottom: spacing.md,
+    marginBottom: spacing.xs,
   },
   earnItem: {
-    aspectRatio: 0.95,
+    aspectRatio: 0.92,
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.sm,
+    borderColor: colors.borderSoft,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: 5,
   },
   earnItemDone: {
-    backgroundColor: colors.cream,
-    opacity: 0.65,
+    backgroundColor: colors.surfaceSunken,
+    borderColor: 'transparent',
   },
+  earnIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  earnIconDone: { backgroundColor: colors.border },
   earnTitle: {
     ...typography.micro,
     color: colors.ink,
     textAlign: 'center',
   },
   earnPts: { ...typography.captionBold, color: colors.brown },
-  earnDoneText: { color: colors.muted },
+  earnDoneText: { color: colors.brownMuted },
+  earnDonePill: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  earnDoneLabel: { ...typography.micro, color: colors.success },
+  beautyCard: { overflow: 'hidden' },
   beautyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
+    gap: spacing.md,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
-  beautyBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
-  beautyName: { ...typography.bodyBold, color: colors.ink },
+  beautyBorder: { borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+  beautyDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.border,
+  },
+  beautyDotOn: { backgroundColor: colors.success },
+  beautyName: { ...typography.title, flex: 1 },
   beautyRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  comingSoonTitle: { ...typography.bodyBold, color: colors.inkSoft },
-  comingSoonSub: { ...typography.caption, color: colors.muted, marginTop: 4 },
+  comingSoon: { marginTop: spacing.lg },
+  comingSoonRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  comingSoonTitle: { ...typography.title, color: colors.inkSoft, flex: 1 },
+  comingSoonSub: { ...typography.caption, marginTop: spacing.sm },
 });

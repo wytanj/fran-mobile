@@ -15,13 +15,24 @@ import {
   View,
 } from 'react-native';
 import { FranLogo } from '../../components/FranLogo';
-import { Badge, Button, Card, Screen, SectionTitle } from '../../components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  Dots,
+  IconTile,
+  PressableScale,
+  ProgressBar,
+  Screen,
+  SectionTitle,
+} from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { bundleBanners, promoBanners, WEEK_LABELS } from '../../data/mock';
 import { ContentWidth } from '../../layout/ContentWidth';
 import { useLayout } from '../../layout/useLayout';
 import type { RootStackParamList } from '../../types';
-import { colors, fonts, radius, shadow, spacing, typography } from '../../theme';
+import { colors, fonts, press, radius, shadow, spacing, tint, typography } from '../../theme';
+import { onFill } from '../../theme/contrast';
 
 export function DiscoverScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -47,12 +58,28 @@ export function DiscoverScreen() {
     );
   };
 
+  // Freezes are earned every 7 consecutive days — show how close the next one is
+  const freezeProgress = (user.streakCount % 7) / 7;
+  const daysToFreeze = 7 - (user.streakCount % 7);
+
   return (
     <Screen padded={false} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <ContentWidth flex={false} style={{ paddingHorizontal: gutter }}>
           <View style={styles.topBar}>
-            <FranLogo height={28} />
+            <View style={styles.topBarRow}>
+              <FranLogo height={26} variant="brown" />
+              <Pressable
+                style={styles.pointsPill}
+                onPress={() => navigation.navigate('Transactions')}
+                accessibilityRole="button"
+                accessibilityLabel={`${user.points} points`}
+              >
+                <Ionicons name="diamond" size={12} color={colors.brown} />
+                <Text style={styles.pointsPillText}>{user.points}</Text>
+              </Pressable>
+            </View>
+            <Text style={styles.helloEyebrow}>Welcome back</Text>
             <Text style={styles.hello}>Hello, {user.name}</Text>
           </View>
         </ContentWidth>
@@ -72,75 +99,96 @@ export function DiscoverScreen() {
             contentContainerStyle={{ paddingHorizontal: gutter }}
             snapToInterval={bannerWidth}
             decelerationRate="fast"
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => navigation.navigate('PromoDetail', { promoId: item.id })}
-                style={{ width: bannerWidth }}
-              >
-                <LinearGradient
-                  colors={item.gradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={[styles.banner, { height: bannerHeight }]}
+            renderItem={({ item }) => {
+              // Copy sits over the gradient's end colour, so key contrast off that
+              const on = onFill(item.gradient[1]);
+              return (
+                <PressableScale
+                  onPress={() => navigation.navigate('PromoDetail', { promoId: item.id })}
+                  scaleTo={press.scaleLarge}
+                  style={{ width: bannerWidth }}
+                  accessibilityLabel={item.title}
                 >
-                  {item.badge ? (
-                    <View style={styles.bannerBadge}>
-                      <Text style={styles.bannerBadgeText}>{item.badge}</Text>
+                  <LinearGradient
+                    colors={item.gradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.banner, shadow.md, { height: bannerHeight }]}
+                  >
+                    {/* Soft light bloom gives the flat gradient some dimension */}
+                    <View style={styles.bannerBloom} pointerEvents="none" />
+                    <View style={styles.bannerContent}>
+                      {item.badge ? (
+                        <View style={[styles.bannerBadge, { backgroundColor: on.chipBg }]}>
+                          <Text style={[styles.bannerBadgeText, { color: on.chipFg }]}>
+                            {item.badge}
+                          </Text>
+                        </View>
+                      ) : null}
+                      <View style={{ flex: 1 }} />
+                      <Text style={[styles.bannerTitle, { color: on.primary }]}>{item.title}</Text>
+                      <Text style={[styles.bannerSub, { color: on.secondary }]}>
+                        {item.subtitle}
+                      </Text>
+                      {item.ctaLabel ? (
+                        <View style={[styles.bannerCta, { backgroundColor: on.chipBg }]}>
+                          <Text style={[styles.bannerCtaText, { color: on.chipFg }]}>
+                            {item.ctaLabel}
+                          </Text>
+                          <Ionicons name="arrow-forward" size={13} color={on.chipFg} />
+                        </View>
+                      ) : null}
                     </View>
-                  ) : null}
-                  <View style={{ flex: 1 }} />
-                  <Text style={styles.bannerTitle}>{item.title}</Text>
-                  <Text style={styles.bannerSub}>{item.subtitle}</Text>
-                  {item.ctaLabel ? (
-                    <View style={styles.bannerCta}>
-                      <Text style={styles.bannerCtaText}>{item.ctaLabel}</Text>
-                    </View>
-                  ) : null}
-                </LinearGradient>
-              </Pressable>
-            )}
+                  </LinearGradient>
+                </PressableScale>
+              );
+            }}
           />
-          <View style={styles.dots}>
-            {promoBanners.map((_, i) => (
-              <View key={i} style={[styles.dot, i === page && styles.dotOn]} />
-            ))}
-          </View>
+          <Dots count={promoBanners.length} index={page} style={styles.dots} />
         </ContentWidth>
 
         <ContentWidth flex={false} style={{ paddingHorizontal: gutter }}>
           <View style={useSplitPanels ? styles.splitRow : undefined}>
-            <Card style={[styles.pointsCard, useSplitPanels && styles.splitHalf]}>
-              <Pressable
-                onPress={() => navigation.navigate('Transactions')}
-                style={styles.pointsRow}
-              >
-                <View>
+            <Card
+              style={[styles.pointsCard, useSplitPanels && styles.splitHalf]}
+              onPress={() => navigation.navigate('Transactions')}
+            >
+              <View style={styles.pointsRow}>
+                <View style={{ flex: 1 }}>
                   <Text style={styles.pointsLabel}>Your points</Text>
                   <Text style={styles.pointsValue}>{user.points}</Text>
-                  {user.pointsExpiringSoon > 0 && user.tier === 1 ? (
-                    <Pressable onPress={() => navigation.navigate('ExpiringPoints')}>
-                      <Text style={styles.expiring}>
-                        {user.pointsExpiringSoon} points expiring soon ›
-                      </Text>
-                    </Pressable>
-                  ) : (
-                    <Text style={styles.expiringMuted}>
-                      {user.tier >= 2 ? 'Points never expire on your tier' : 'Tap for history'}
+                </View>
+                <IconTile icon="diamond-outline" size={52} iconSize={26} />
+              </View>
+
+              <View style={styles.pointsFooter}>
+                {user.pointsExpiringSoon > 0 && user.tier === 1 ? (
+                  <Pressable
+                    onPress={() => navigation.navigate('ExpiringPoints')}
+                    style={styles.expiringChip}
+                    accessibilityRole="button"
+                  >
+                    <Ionicons name="time-outline" size={12} color={colors.warning} />
+                    <Text style={styles.expiring}>
+                      {user.pointsExpiringSoon} expiring soon
                     </Text>
-                  )}
-                </View>
-                <View style={styles.pointsIcon}>
-                  <Ionicons name="diamond-outline" size={28} color={colors.brown} />
-                </View>
-              </Pressable>
+                    <Ionicons name="chevron-forward" size={12} color={colors.warning} />
+                  </Pressable>
+                ) : (
+                  <Text style={styles.expiringMuted}>
+                    {user.tier >= 2 ? 'Points never expire on your tier' : 'Tap for history'}
+                  </Text>
+                )}
+              </View>
             </Card>
 
             <Card style={[styles.checkInCard, useSplitPanels && styles.splitHalf]}>
               <View style={styles.streakHeader}>
+                <View style={styles.streakFlame}>
+                  <Ionicons name="flame" size={20} color={colors.streak} />
+                </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.streakTitle}>
-                    {user.streakCount}-day win streak 🔥
-                  </Text>
+                  <Text style={styles.streakTitle}>{user.streakCount}-day win streak</Text>
                   <Text style={styles.streakSub}>
                     {user.checkedInToday ? "You're on fire today!" : 'Check in to keep it going'}
                   </Text>
@@ -156,8 +204,8 @@ export function DiscoverScreen() {
                     >
                       <Ionicons
                         name="snow-outline"
-                        size={14}
-                        color={i < user.streakFreezes ? colors.info : colors.muted}
+                        size={13}
+                        color={i < user.streakFreezes ? colors.info : colors.borderStrong}
                       />
                     </View>
                   ))}
@@ -169,10 +217,10 @@ export function DiscoverScreen() {
                   const done = user.checkedInDays[i];
                   return (
                     <View key={`${label}-${i}`} style={styles.dayCol}>
-                      <Text style={styles.dayLabel}>{label}</Text>
+                      <Text style={[styles.dayLabel, done && styles.dayLabelOn]}>{label}</Text>
                       <View style={[styles.dayDot, done && styles.dayDotOn]}>
                         {done ? (
-                          <Ionicons name="checkmark" size={14} color={colors.brown} />
+                          <Ionicons name="checkmark" size={15} color={colors.brown} />
                         ) : null}
                       </View>
                     </View>
@@ -180,37 +228,47 @@ export function DiscoverScreen() {
                 })}
               </View>
 
-              <Text style={styles.freezeHint}>
-                Streak freezes {user.streakFreezes}/2 · earn one every 7 consecutive days
-              </Text>
+              <View style={styles.freezeMeter}>
+                <ProgressBar value={freezeProgress} height={6} />
+                <Text style={styles.freezeHint}>
+                  {user.streakFreezes}/2 freezes · {daysToFreeze} more day
+                  {daysToFreeze === 1 ? '' : 's'} to earn one
+                </Text>
+              </View>
 
               <Button
                 title={user.checkedInToday ? 'Checked in today' : 'Check in for +1 point'}
                 onPress={onCheckIn}
                 disabled={user.checkedInToday}
-                icon="flame"
-                style={{ marginTop: spacing.md }}
+                icon={user.checkedInToday ? 'checkmark-circle' : 'flame'}
+                style={{ marginTop: spacing.lg }}
               />
             </Card>
           </View>
 
-          <SectionTitle title="Member exclusive bundles" />
+          <SectionTitle
+            eyebrow="For members"
+            title="Exclusive bundles"
+            subtitle="Save more when you build a full routine"
+          />
           <View style={listColumns > 1 ? styles.bundleGrid : undefined}>
             {bundleBanners.map((b) => (
-              <Pressable
+              <PressableScale
                 key={b.id}
                 onPress={() => navigation.navigate('PromoDetail', { promoId: 'promo_1' })}
-                style={[
-                  styles.bundle,
-                  { borderLeftColor: b.color },
-                  shadow.sm,
-                  listColumns > 1 && styles.bundleHalf,
-                ]}
+                style={[styles.bundle, shadow.sm, listColumns > 1 && styles.bundleHalf]}
+                accessibilityLabel={b.title}
               >
-                {b.badge ? <Badge label={b.badge} /> : null}
-                <Text style={styles.bundleTitle}>{b.title}</Text>
-                <Text style={styles.bundleSub}>{b.subtitle}</Text>
-              </Pressable>
+                <View style={[styles.bundleSwatch, { backgroundColor: b.color }]}>
+                  <Ionicons name="pricetag" size={17} color={colors.brown} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  {b.badge ? <Badge label={b.badge} /> : null}
+                  <Text style={styles.bundleTitle}>{b.title}</Text>
+                  <Text style={styles.bundleSub}>{b.subtitle}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={17} color={colors.borderStrong} />
+              </PressableScale>
             ))}
           </View>
         </ContentWidth>
@@ -223,43 +281,81 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: spacing.huge },
   topBar: {
     paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
+    paddingBottom: spacing.lg,
   },
-  hello: { ...typography.h2, color: colors.ink, marginTop: spacing.sm },
+  topBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  pointsPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: colors.yellowSoft,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+  },
+  pointsPillText: {
+    ...typography.captionBold,
+    color: colors.brown,
+  },
+  helloEyebrow: { ...typography.eyebrow, marginTop: spacing.lg },
+  hello: { ...typography.h1, marginTop: 4 },
   banner: {
-    borderRadius: radius.xl,
-    padding: spacing.xl,
-    marginRight: 0,
+    borderRadius: radius.xxl,
+    overflow: 'hidden',
+  },
+  bannerContent: {
+    flex: 1,
+    padding: spacing.xxl,
+  },
+  bannerBloom: {
+    position: 'absolute',
+    top: -70,
+    right: -50,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: tint.lightVeil,
+    opacity: 0.35,
   },
   bannerBadge: {
     alignSelf: 'flex-start',
     backgroundColor: colors.brown,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
     borderRadius: radius.full,
   },
   bannerBadgeText: {
     fontFamily: fonts.bodySemi,
     fontSize: 10,
-    letterSpacing: 0.5,
+    lineHeight: 13,
+    letterSpacing: 0.9,
     color: colors.yellow,
     textTransform: 'uppercase',
   },
   bannerTitle: {
     ...typography.h1,
     color: colors.brown,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
+    maxWidth: 300,
   },
   bannerSub: {
     ...typography.body,
     color: colors.brownSoft,
     marginBottom: spacing.lg,
+    maxWidth: 320,
   },
   bannerCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     alignSelf: 'flex-start',
     backgroundColor: colors.brown,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + 1,
     borderRadius: radius.full,
   },
   bannerCtaText: {
@@ -268,21 +364,8 @@ const styles = StyleSheet.create({
     color: colors.yellow,
   },
   dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.borderStrong,
-  },
-  dotOn: {
-    width: 18,
-    backgroundColor: colors.yellow,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xs,
   },
   splitRow: {
     flexDirection: 'row',
@@ -299,59 +382,75 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  pointsLabel: { ...typography.caption, color: colors.muted },
-  pointsValue: { ...typography.hero, color: colors.brown, marginTop: 2 },
-  expiring: { ...typography.captionBold, color: colors.warning, marginTop: spacing.xs },
-  expiringMuted: { ...typography.caption, color: colors.muted, marginTop: spacing.xs },
-  pointsIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: radius.lg,
-    backgroundColor: colors.yellowSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
+  pointsLabel: { ...typography.eyebrow },
+  pointsValue: { ...typography.numeral, color: colors.brown, marginTop: 4 },
+  pointsFooter: {
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderSoft,
   },
+  expiringChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.warningSoft,
+    paddingLeft: spacing.sm,
+    paddingRight: 6,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+  },
+  expiring: { ...typography.captionBold, color: colors.warning },
+  expiringMuted: { ...typography.caption },
   checkInCard: { marginTop: spacing.md },
   streakHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+    gap: spacing.md,
   },
-  streakTitle: { ...typography.h3, color: colors.streak },
-  streakSub: { ...typography.caption, color: colors.muted, marginTop: 2 },
-  freezeRow: { flexDirection: 'row', gap: 6 },
+  streakFlame: {
+    width: 38,
+    height: 38,
+    borderRadius: 13,
+    backgroundColor: '#FDEDE6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  streakTitle: { ...typography.title },
+  streakSub: { ...typography.caption, marginTop: 1 },
+  freezeRow: { flexDirection: 'row', gap: 5 },
   freeze: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
   },
   freezeOn: {
-    backgroundColor: '#E8F2F8',
+    backgroundColor: colors.blueSoft,
     borderColor: colors.info,
   },
   freezeOff: {
-    backgroundColor: colors.cream,
-    borderColor: colors.border,
-    borderStyle: 'dashed',
+    backgroundColor: colors.surfaceSunken,
+    borderColor: colors.borderSoft,
   },
   weekRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  dayCol: { alignItems: 'center', gap: 6 },
-  dayLabel: { ...typography.micro, color: colors.muted },
+  dayCol: { alignItems: 'center', gap: 7 },
+  dayLabel: { ...typography.micro, letterSpacing: 0.6 },
+  dayLabelOn: { color: colors.brown },
   dayDot: {
-    width: 32,
-    height: 32,
+    width: 34,
+    height: 34,
     borderRadius: radius.full,
-    backgroundColor: colors.cream,
+    backgroundColor: colors.surfaceSunken,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -359,10 +458,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellow,
     borderColor: colors.yellowDeep,
   },
+  freezeMeter: {
+    marginTop: spacing.lg,
+    gap: spacing.sm,
+  },
   freezeHint: {
-    ...typography.caption,
-    color: colors.muted,
-    marginTop: spacing.md,
+    ...typography.micro,
     textAlign: 'center',
   },
   bundleGrid: {
@@ -371,19 +472,28 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   bundle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
-    borderLeftWidth: 4,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
   },
   bundleHalf: {
     flexGrow: 1,
     flexBasis: '46%',
     marginBottom: 0,
   },
-  bundleTitle: { ...typography.bodyBold, color: colors.ink, marginTop: spacing.sm },
-  bundleSub: { ...typography.caption, color: colors.muted, marginTop: 2 },
+  bundleSwatch: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bundleTitle: { ...typography.title, marginTop: spacing.xs },
+  bundleSub: { ...typography.caption, marginTop: 1 },
 });

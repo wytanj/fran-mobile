@@ -10,11 +10,11 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { Header, Screen } from '../../components/ui';
+import { Dots, Header, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { tiers } from '../../data/mock';
 import type { RootStackParamList, TierInfo } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, tint, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MembershipTiers'>;
 
@@ -49,25 +49,30 @@ export function MembershipTiersScreen({ navigation }: Props) {
         getItemLayout={(_, i) => ({ length: CARD_W, offset: CARD_W * i, index: i })}
         renderItem={({ item }) => <TierSlide tier={item} isCurrent={item.tier === user.tier} />}
       />
-      <View style={styles.dots}>
-        {tiers.map((t, i) => (
-          <View key={t.tier} style={[styles.dot, i === index && styles.dotOn]} />
-        ))}
-      </View>
+      <Dots count={tiers.length} index={index} style={styles.dots} />
     </Screen>
   );
 }
 
 function TierSlide({ tier, isCurrent }: { tier: TierInfo; isCurrent: boolean }) {
   return (
-    <View style={[styles.card, { width: CARD_W - spacing.sm, backgroundColor: tier.bgColor }]}>
+    <View
+      style={[
+        styles.card,
+        { width: CARD_W - spacing.sm, backgroundColor: tier.bgColor },
+        isCurrent && { borderColor: tier.color, borderWidth: 2 },
+        shadow.sm,
+      ]}
+    >
+      <View style={[styles.bloom, { backgroundColor: tier.color }]} pointerEvents="none" />
       <View style={styles.top}>
         {isCurrent ? (
           <View style={styles.myTier}>
-            <Text style={styles.myTierText}>MY TIER</Text>
+            <Ionicons name="star" size={9} color={colors.yellow} />
+            <Text style={styles.myTierText}>My tier</Text>
           </View>
         ) : (
-          <View style={{ height: 22 }} />
+          <View style={{ height: 23 }} />
         )}
         <Text style={[styles.name, { color: tier.color }]}>{tier.name}</Text>
         <Text style={styles.spend}>
@@ -85,8 +90,14 @@ function TierSlide({ tier, isCurrent }: { tier: TierInfo; isCurrent: boolean }) 
         ))}
       </View>
       <View style={styles.meta}>
-        <Text style={styles.metaLabel}>Earn rate</Text>
-        <Text style={styles.metaValue}>$1 = {tier.pointsPerDollar} pts</Text>
+        <View>
+          <Text style={styles.metaLabel}>Earn rate</Text>
+          <Text style={styles.metaValue}>$1 = {tier.pointsPerDollar} pts</Text>
+        </View>
+        <View style={styles.metaRight}>
+          <Text style={styles.metaLabel}>Points</Text>
+          <Text style={styles.metaValue}>{tier.pointsExpire ? '12-month expiry' : 'Never expire'}</Text>
+        </View>
       </View>
     </View>
   );
@@ -94,23 +105,41 @@ function TierSlide({ tier, isCurrent }: { tier: TierInfo; isCurrent: boolean }) 
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: radius.xl,
-    padding: spacing.xl,
+    borderRadius: radius.xxl,
+    padding: spacing.xxl,
     marginRight: spacing.sm,
-    minHeight: 420,
+    minHeight: 430,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
+    overflow: 'hidden',
+  },
+  bloom: {
+    position: 'absolute',
+    top: -100,
+    right: -80,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    opacity: 0.13,
   },
   top: { marginBottom: spacing.xl },
   myTier: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     alignSelf: 'flex-start',
-    backgroundColor: colors.ink,
+    backgroundColor: colors.brown,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: radius.full,
     marginBottom: spacing.sm,
   },
-  myTierText: { ...typography.micro, color: colors.white },
+  myTierText: {
+    ...typography.micro,
+    color: colors.yellow,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
   name: { ...typography.hero },
   spend: { ...typography.body, color: colors.inkSoft, marginTop: spacing.sm },
   perks: { gap: spacing.md, flex: 1 },
@@ -120,18 +149,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
     paddingTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.08)',
+    borderTopColor: tint.inkLine,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: spacing.md,
   },
-  metaLabel: { ...typography.caption, color: colors.muted },
-  metaValue: { ...typography.bodyBold, color: colors.ink },
+  metaRight: { alignItems: 'flex-end' },
+  metaLabel: { ...typography.eyebrow, color: colors.brownMuted },
+  metaValue: { ...typography.captionBold, marginTop: 3 },
   dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 6,
     paddingVertical: spacing.xl,
   },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.borderStrong },
-  dotOn: { width: 18, backgroundColor: colors.yellow },
 });

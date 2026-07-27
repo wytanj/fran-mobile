@@ -1,11 +1,12 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import type { RootStackParamList } from '../../types';
-import { colors, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, typography } from '../../theme';
 import { formatBirthdayInput } from '../../utils/formatBirthdayInput';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BirthdayModal'>;
@@ -19,9 +20,15 @@ export function BirthdayModalScreen({ navigation }: Props) {
     return (
       <Screen edges={['top']}>
         <Header title="Birthday" onBack={() => navigation.goBack()} />
-        <Text style={styles.body}>
-          Your birthday is set to {user.birthday} and can no longer be changed.
-        </Text>
+        <View style={styles.lockedCard}>
+          <View style={styles.iconWell}>
+            <Ionicons name="gift" size={22} color={colors.brown} />
+          </View>
+          <Text style={styles.lockedValue}>{user.birthday}</Text>
+          <Text style={styles.lockedNote}>
+            Your birthday is locked in and can no longer be changed.
+          </Text>
+        </View>
       </Screen>
     );
   }
@@ -44,6 +51,9 @@ export function BirthdayModalScreen({ navigation }: Props) {
   return (
     <Screen edges={['top']}>
       <Header title="Your birthday" onBack={() => navigation.goBack()} />
+      <View style={styles.iconWell}>
+        <Ionicons name="gift-outline" size={22} color={colors.brown} />
+      </View>
       <Text style={styles.body}>
         Add your birthday once for +10 points and birthday-month 2× points. This cannot be changed
         later.
@@ -55,16 +65,44 @@ export function BirthdayModalScreen({ navigation }: Props) {
         onChangeText={(text) => setValue(formatBirthdayInput(text))}
         keyboardType="number-pad"
         maxLength={10}
+        hint="Format: YYYY-MM-DD"
       />
-      <Button title="Save birthday" onPress={onSave} loading={loading} />
+      <Button title="Save birthday" onPress={onSave} loading={loading} icon="gift" />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  iconWell: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.lg,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.md,
+    marginBottom: spacing.lg,
+  },
   body: {
     ...typography.body,
     color: colors.inkSoft,
     marginBottom: spacing.xl,
+  },
+  lockedCard: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+    padding: spacing.xxl,
+    marginTop: spacing.lg,
+    ...shadow.sm,
+  },
+  lockedValue: { ...typography.h2, marginTop: spacing.sm },
+  lockedNote: {
+    ...typography.caption,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+    maxWidth: 280,
   },
 });

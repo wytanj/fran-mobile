@@ -5,6 +5,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { FranLogo } from './src/components/FranLogo';
 import { TypographySelector } from './src/components/TypographySelector';
 import { TypographyProvider } from './src/context/TypographyContext';
 import { UserProvider } from './src/context/UserContext';
@@ -22,9 +23,11 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
+    // Mirrors the splash (yellow ground, light wordmark) so the handoff is seamless
     return (
       <View style={styles.boot}>
-        <ActivityIndicator size="large" color={colors.yellow} />
+        <FranLogo height={48} variant="brown" />
+        <ActivityIndicator color={colors.brown} style={styles.bootSpinner} />
       </View>
     );
   }
@@ -53,6 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.cream,
+    backgroundColor: colors.yellow,
   },
+  bootSpinner: { marginTop: 28 },
 });

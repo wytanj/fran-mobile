@@ -6,7 +6,7 @@ import { LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-
 import { Header, Screen } from '../../components/ui';
 import { faqs } from '../../data/mock';
 import type { RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, tint, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Faq'>;
 
@@ -33,10 +33,22 @@ export function FaqScreen({ navigation }: Props) {
   const renderItem = (id: string, question: string, answer: string) => {
     const open = openId === id;
     return (
-      <Pressable key={id} onPress={() => toggle(id)} style={styles.item}>
+      <Pressable
+        key={id}
+        onPress={() => toggle(id)}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        style={({ pressed }) => [
+          styles.item,
+          open && styles.itemOpen,
+          pressed && { backgroundColor: tint.inkFaint },
+        ]}
+      >
         <View style={styles.itemHead}>
           <Text style={styles.q}>{question}</Text>
-          <Ionicons name={open ? 'remove' : 'add'} size={20} color={colors.ink} />
+          <View style={[styles.plus, open && styles.plusOpen]}>
+            <Ionicons name={open ? 'remove' : 'add'} size={16} color={colors.brown} />
+          </View>
         </View>
         {open ? <Text style={styles.a}>{answer}</Text> : null}
       </Pressable>
@@ -47,16 +59,25 @@ export function FaqScreen({ navigation }: Props) {
     <Screen edges={['top']}>
       <Header title="FAQ" onBack={() => navigation.goBack()} />
       <View style={styles.search}>
-        <Ionicons name="search" size={18} color={colors.muted} />
+        <Ionicons name="search" size={17} color={colors.brownMuted} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search FAQs"
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={colors.brownMuted}
           value={query}
           onChangeText={setQuery}
         />
+        {query ? (
+          <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityLabel="Clear search">
+            <Ionicons name="close-circle" size={17} color={colors.borderStrong} />
+          </Pressable>
+        ) : null}
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: spacing.huge }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: spacing.huge }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.section}>Top questions</Text>
         <View style={styles.card}>{top.map((f) => renderItem(f.id, f.question, f.answer))}</View>
         {rest.length ? (
@@ -77,28 +98,40 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderWidth: 1.5,
+    borderColor: colors.border,
     paddingHorizontal: spacing.lg,
-    height: 48,
+    height: 50,
     marginBottom: spacing.lg,
   },
-  searchInput: { flex: 1, ...typography.body, color: colors.ink },
-  section: { ...typography.captionBold, color: colors.muted, marginBottom: spacing.sm, marginTop: spacing.sm },
+  searchInput: { flex: 1, ...typography.body },
+  section: { ...typography.eyebrow, marginBottom: spacing.sm, marginTop: spacing.sm },
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     overflow: 'hidden',
     marginBottom: spacing.md,
+    ...shadow.sm,
   },
   item: {
-    padding: spacing.lg,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderSoft,
   },
-  itemHead: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md },
-  q: { ...typography.bodyBold, color: colors.ink, flex: 1 },
+  itemOpen: { backgroundColor: colors.cream },
+  itemHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  plus: {
+    width: 26,
+    height: 26,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSunken,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  plusOpen: { backgroundColor: colors.yellowSoft },
+  q: { ...typography.title, flex: 1 },
   a: { ...typography.body, color: colors.inkSoft, marginTop: spacing.md },
 });

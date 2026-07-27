@@ -1,26 +1,46 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FranLogo } from '../../components/FranLogo';
 import { Button, Screen } from '../../components/ui';
 import type { OnboardingStackParamList } from '../../types';
-import { colors, spacing, typography } from '../../theme';
+import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Welcome'>;
+
+const HIGHLIGHTS: { icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
+  { icon: 'diamond-outline', label: 'Earn points in-store' },
+  { icon: 'ticket-outline', label: 'Member-only vouchers' },
+  { icon: 'sparkles-outline', label: 'A beauty profile that helps' },
+];
 
 export function WelcomeScreen({ navigation }: Props) {
   return (
     <Screen edges={['top', 'bottom']} style={styles.wrap}>
       <View style={styles.hero}>
         <View style={styles.logoWrap}>
-          <FranLogo height={56} />
+          {/* Yellow halo lets the wordmark sit on cream without washing out */}
+          <View style={styles.halo} />
+          <FranLogo height={54} variant="brown" />
         </View>
         <Text style={styles.tagline}>Your new favourite{'\n'}four-letter word.</Text>
         <Text style={styles.body}>
           Earn points in-store, unlock member exclusives, and build a beauty profile that actually
           helps you shop. No fluff — just Fran.
         </Text>
+
+        <View style={styles.highlights}>
+          {HIGHLIGHTS.map((h) => (
+            <View key={h.label} style={styles.highlightRow}>
+              <View style={styles.highlightIcon}>
+                <Ionicons name={h.icon} size={15} color={colors.brown} />
+              </View>
+              <Text style={styles.highlightText}>{h.label}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       <View style={styles.actions}>
@@ -51,6 +71,15 @@ const styles = StyleSheet.create({
   },
   logoWrap: {
     marginBottom: spacing.xxl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  halo: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: colors.yellowSoft,
   },
   tagline: {
     ...typography.h1,
@@ -65,6 +94,24 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     maxWidth: 420,
   },
+  highlights: {
+    marginTop: spacing.xxl,
+    gap: spacing.md,
+  },
+  highlightRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  highlightIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: radius.full,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  highlightText: { ...typography.bodyBold, color: colors.inkSoft },
   actions: {
     width: '100%',
     maxWidth: 480,
@@ -72,7 +119,6 @@ const styles = StyleSheet.create({
   },
   footnote: {
     ...typography.caption,
-    color: colors.muted,
     textAlign: 'center',
     marginTop: spacing.lg,
   },

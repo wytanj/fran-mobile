@@ -1,12 +1,13 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
 import { TWILIO_AUTH_ENABLED } from '../../config/auth';
 import { parseSingaporeMobile, sendOtp } from '../../services/auth';
 import type { OnboardingStackParamList } from '../../types';
-import { colors, spacing, typography } from '../../theme';
+import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Phone'>;
 
@@ -58,6 +59,9 @@ export function PhoneScreen({ navigation, route }: Props) {
         style={{ flex: 1 }}
       >
         <View style={styles.content}>
+          <View style={styles.iconWell}>
+            <Ionicons name="call-outline" size={22} color={colors.brown} />
+          </View>
           <Text style={styles.title}>What's your mobile number?</Text>
           <Text style={styles.sub}>
             We'll send a one-time SMS code to a Singapore mobile. Your number is your login — no
@@ -74,17 +78,19 @@ export function PhoneScreen({ navigation, route }: Props) {
               if (error) setError('');
             }}
             error={error}
+            hint={
+              TWILIO_AUTH_ENABLED
+                ? undefined
+                : 'SMS not live yet — next screen accepts demo code 1234.'
+            }
           />
-          {!TWILIO_AUTH_ENABLED ? (
-            <Text style={styles.demoNote}>
-              SMS not live yet — next screen accepts demo code 1234.
-            </Text>
-          ) : null}
         </View>
         <Button
           title="Send OTP"
           onPress={onContinue}
           loading={loading}
+          iconAfter
+          icon="arrow-forward"
           style={styles.cta}
         />
       </KeyboardAvoidingView>
@@ -94,12 +100,16 @@ export function PhoneScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   content: { flex: 1, paddingTop: spacing.lg },
-  title: { ...typography.h1, color: colors.ink, marginBottom: spacing.sm },
-  sub: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xxl },
-  demoNote: {
-    ...typography.caption,
-    color: colors.muted,
-    marginTop: -spacing.md,
+  iconWell: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.lg,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
   },
+  title: { ...typography.h1, marginBottom: spacing.sm },
+  sub: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xxl },
   cta: { marginBottom: spacing.lg },
 });

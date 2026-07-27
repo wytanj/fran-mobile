@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Header, Screen } from '../../components/ui';
 import { expiringPoints } from '../../data/mock';
 import type { RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ExpiringPoints'>;
 
@@ -40,7 +40,7 @@ export function ExpiringPointsScreen({ navigation }: Props) {
             >
               {r.points}
             </Text>
-            <Text style={[styles.cell, { width: 100, textAlign: 'right', color: colors.muted }]}>
+            <Text style={[styles.cell, { width: 100, textAlign: 'right', color: colors.brownMuted }]}>
               {r.expiryDate}
             </Text>
           </View>
@@ -54,20 +54,22 @@ const styles = StyleSheet.create({
   intro: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xl },
   table: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     overflow: 'hidden',
+    ...shadow.sm,
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderSoft,
   },
-  head: { backgroundColor: colors.cream },
-  cell: { ...typography.body, color: colors.ink },
-  headText: { ...typography.captionBold, color: colors.inkSoft },
+  head: { backgroundColor: colors.surfaceSunken },
+  cell: { ...typography.body },
+  headText: { ...typography.eyebrow },
   points: { ...typography.bodyBold },
 });

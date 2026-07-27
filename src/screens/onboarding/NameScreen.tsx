@@ -1,10 +1,11 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
 import type { OnboardingStackParamList } from '../../types';
-import { colors, spacing, typography } from '../../theme';
+import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Name'>;
 
@@ -43,6 +44,9 @@ export function NameScreen({ navigation }: Props) {
         style={{ flex: 1 }}
       >
         <View style={styles.content}>
+          <View style={styles.iconWell}>
+            <Ionicons name="person-outline" size={22} color={colors.brown} />
+          </View>
           <Text style={styles.title}>What should we call you?</Text>
           <Text style={styles.sub}>Your name helps personalize rewards and in-app greetings.</Text>
           <Input
@@ -55,7 +59,13 @@ export function NameScreen({ navigation }: Props) {
             autoCapitalize="words"
           />
         </View>
-        <Button title="Continue" onPress={goNext} style={{ marginBottom: spacing.lg }} />
+        <Button
+          title="Continue"
+          onPress={goNext}
+          icon="arrow-forward"
+          iconAfter
+          style={{ marginBottom: spacing.lg }}
+        />
       </KeyboardAvoidingView>
     </Screen>
   );
@@ -63,6 +73,15 @@ export function NameScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   content: { flex: 1, paddingTop: spacing.lg },
-  title: { ...typography.h1, color: colors.ink, marginBottom: spacing.sm },
+  iconWell: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.lg,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  title: { ...typography.h1, marginBottom: spacing.sm },
   sub: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xxl },
 });

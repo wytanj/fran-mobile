@@ -1,5 +1,6 @@
 import { Text, TextInput } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -18,7 +19,7 @@ import {
 import { useUser } from '../../context/UserContext';
 import { sendOtp, verifyOtp } from '../../services/auth';
 import type { OnboardingStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, fonts, radius, spacing, typography } from '../../theme';
 import { signupDraft } from './NameScreen';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Otp'>;
@@ -132,16 +133,21 @@ export function OtpScreen({ navigation, route }: Props) {
         style={{ flex: 1 }}
       >
         <View style={styles.content}>
+          <View style={styles.lockWell}>
+            <Ionicons name="chatbubble-ellipses" size={22} color={colors.brown} />
+          </View>
           <Text style={styles.title}>Enter OTP</Text>
           <Text style={styles.sub}>
             {TWILIO_AUTH_ENABLED ? 'Code sent to ' : 'Demo verify for '}
             <Text style={styles.phone}>{phone}</Text>
           </Text>
-          {!TWILIO_AUTH_ENABLED ? (
-            <Text style={styles.hint}>Demo mode — enter {DEMO_OTP_CODE}</Text>
-          ) : (
-            <Text style={styles.hint}>SMS · Singapore · 4-digit code</Text>
-          )}
+          <View style={styles.hintChip}>
+            <Text style={styles.hint}>
+              {TWILIO_AUTH_ENABLED
+                ? `SMS · Singapore · ${OTP_LENGTH}-digit code`
+                : `Demo mode — enter ${DEMO_OTP_CODE}`}
+            </Text>
+          </View>
 
           <View style={styles.otpRow}>
             {otp.map((d, i) => (
@@ -162,17 +168,23 @@ export function OtpScreen({ navigation, route }: Props) {
               />
             ))}
           </View>
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? (
+            <View style={styles.errorRow}>
+              <Ionicons name="alert-circle" size={14} color={colors.danger} />
+              <Text style={styles.error}>{error}</Text>
+            </View>
+          ) : null}
 
           <Pressable
             disabled={seconds > 0 || resending}
             onPress={onResend}
-            style={styles.resend}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.resend, pressed && { opacity: 0.6 }]}
           >
             <Text
               style={[
                 styles.resendText,
-                (seconds > 0 || resending) && { color: colors.muted },
+                (seconds > 0 || resending) && { color: colors.brownMuted },
               ]}
             >
               {resending
@@ -196,15 +208,28 @@ export function OtpScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   content: { flex: 1, paddingTop: spacing.lg },
-  title: { ...typography.h1, color: colors.ink },
-  sub: { ...typography.body, color: colors.inkSoft, marginTop: spacing.sm },
-  phone: { fontWeight: '600', color: colors.ink },
-  hint: {
-    ...typography.caption,
-    color: colors.muted,
-    marginTop: spacing.sm,
-    marginBottom: spacing.xxl,
+  lockWell: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.lg,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
   },
+  title: { ...typography.h1 },
+  sub: { ...typography.body, color: colors.inkSoft, marginTop: spacing.sm },
+  phone: { fontFamily: fonts.bodySemi, color: colors.ink },
+  hintChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.surfaceSunken,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+    marginTop: spacing.md,
+    marginBottom: spacing.xxxl,
+  },
+  hint: { ...typography.micro, color: colors.inkSoft },
   otpRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -220,20 +245,30 @@ const styles = StyleSheet.create({
     flexBasis: 0,
     minWidth: 48,
     maxWidth: 64,
-    height: 56,
+    height: 62,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: colors.borderStrong,
+    borderColor: colors.border,
     backgroundColor: colors.surface,
     textAlign: 'center',
-    fontSize: 22,
-    fontWeight: '700',
+    fontFamily: fonts.displayExtra,
+    fontSize: 26,
     color: colors.ink,
     paddingHorizontal: 0,
   },
-  otpFilled: { borderColor: colors.yellowDeep, backgroundColor: colors.yellowSoft },
-  otpError: { borderColor: colors.danger },
-  error: { ...typography.caption, color: colors.danger, marginTop: spacing.sm },
+  otpFilled: {
+    borderColor: colors.yellowDeep,
+    backgroundColor: colors.yellowSoft,
+  },
+  otpError: { borderColor: colors.danger, backgroundColor: colors.dangerSoft },
+  errorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    marginTop: spacing.md,
+  },
+  error: { ...typography.caption, color: colors.danger },
   resend: { marginTop: spacing.xl, alignSelf: 'center' },
   resendText: { ...typography.bodyBold, color: colors.brown },
 });

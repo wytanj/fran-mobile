@@ -1,8 +1,9 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Header, Screen } from '../../components/ui';
+import { Button, Header, ProgressBar, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { categoryLabels, quizQuestions } from '../../data/quizQuestions';
 import type { RootStackParamList } from '../../types';
@@ -81,13 +82,20 @@ export function QuizScreen({ navigation, route }: Props) {
         title={`${categoryLabels[category]} quiz`}
         onBack={onBackQ}
       />
-      <View style={styles.progressBg}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+      <ProgressBar value={progress} height={6} style={styles.progress} />
+      <View style={styles.stepRow}>
+        <Text style={styles.step}>
+          Question {step + 1} of {questions.length}
+        </Text>
+        {q.type === 'multi' && q.maxSelect ? (
+          <Text style={styles.step}>Pick up to {q.maxSelect}</Text>
+        ) : null}
       </View>
-      <Text style={styles.step}>
-        Question {step + 1} of {questions.length}
-      </Text>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: spacing.xl }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: spacing.xl }}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.question}>{q.question}</Text>
         {q.type === 'multi' ? (
           <View style={styles.chips}>
@@ -97,12 +105,18 @@ export function QuizScreen({ navigation, route }: Props) {
                 <Pressable
                   key={opt.id}
                   onPress={() => toggleMulti(opt.id)}
-                  style={[styles.chip, on && styles.chipOn]}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: on }}
+                  style={({ pressed }) => [
+                    styles.chip,
+                    on && styles.chipOn,
+                    pressed && !on && { backgroundColor: colors.surfaceSunken },
+                  ]}
                 >
-                  <Text style={[styles.chipText, on && styles.chipTextOn]}>
-                    {on ? '✓ ' : ''}
-                    {opt.label}
-                  </Text>
+                  {on ? (
+                    <Ionicons name="checkmark" size={13} color={colors.brown} />
+                  ) : null}
+                  <Text style={[styles.chipText, on && styles.chipTextOn]}>{opt.label}</Text>
                 </Pressable>
               );
             })}
@@ -115,7 +129,13 @@ export function QuizScreen({ navigation, route }: Props) {
                 <Pressable
                   key={opt.id}
                   onPress={() => selectSingle(opt.id)}
-                  style={[styles.option, on && styles.optionOn]}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  style={({ pressed }) => [
+                    styles.option,
+                    on && styles.optionOn,
+                    pressed && !on && { backgroundColor: colors.surfaceSunken },
+                  ]}
                 >
                   <View style={[styles.radio, on && styles.radioOn]}>
                     {on ? <View style={styles.radioDot} /> : null}
@@ -144,16 +164,15 @@ export function QuizScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  progressBg: {
-    height: 4,
-    backgroundColor: colors.border,
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: spacing.md,
+  progress: { marginBottom: spacing.md },
+  stepRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
-  progressFill: { height: '100%', backgroundColor: colors.yellow },
-  step: { ...typography.caption, color: colors.muted, marginBottom: spacing.md },
-  question: { ...typography.h2, color: colors.ink, marginBottom: spacing.xl },
+  step: { ...typography.eyebrow },
+  question: { ...typography.h2, marginBottom: spacing.xl, maxWidth: 460 },
   list: { gap: spacing.sm },
   option: {
     flexDirection: 'row',
@@ -176,30 +195,33 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 2,
+    marginTop: 1,
   },
-  radioOn: { borderColor: colors.yellowDeep },
+  radioOn: { borderColor: colors.yellowDeep, backgroundColor: colors.white },
   radioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: colors.yellowDeep,
   },
-  optLabel: { ...typography.bodyBold, color: colors.ink },
-  optHint: { ...typography.caption, color: colors.muted, marginTop: 2 },
+  optLabel: { ...typography.title },
+  optHint: { ...typography.caption, marginTop: 2 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md - 2,
     borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderWidth: 1.5,
+    borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   chipOn: {
     backgroundColor: colors.yellow,
     borderColor: colors.yellowDeep,
   },
-  chipText: { ...typography.captionBold, color: colors.ink },
+  chipText: { ...typography.captionBold },
   chipTextOn: { color: colors.brown },
 });

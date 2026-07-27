@@ -35,7 +35,7 @@ import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { QuizScreen } from '../screens/profile/QuizScreen';
 import { VoucherDetailScreen } from '../screens/vouchers/VoucherDetailScreen';
 import { VouchersScreen } from '../screens/vouchers/VouchersScreen';
-import { colors, fonts } from '../theme';
+import { colors, fonts, radius } from '../theme';
 import type {
   MainTabParamList,
   OnboardingStackParamList,
@@ -71,6 +71,28 @@ function OnboardingNavigator() {
   );
 }
 
+/**
+ * Icon in a soft yellow capsule when active — reads as a selection without
+ * needing a second accent colour in the bar.
+ */
+function TabIcon({
+  name,
+  activeName,
+  color,
+  focused,
+}: {
+  name: keyof typeof Ionicons.glyphMap;
+  activeName: keyof typeof Ionicons.glyphMap;
+  color: string;
+  focused: boolean;
+}) {
+  return (
+    <View style={[styles.tabIcon, focused && styles.tabIconOn]}>
+      <Ionicons name={focused ? activeName : name} size={21} color={color} />
+    </View>
+  );
+}
+
 function MainTabs() {
   const { variant } = useTypography();
 
@@ -82,6 +104,7 @@ function MainTabs() {
         tabBarInactiveTintColor: colors.tabInactive,
         // Full-width bar stays thumb-friendly on open foldables (edge reach)
         tabBarStyle: styles.tabBar,
+        tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: StyleSheet.flatten([
           styles.tabLabel,
           { fontFamily: resolveFontFamily(variant, fonts.bodySemi) },
@@ -94,8 +117,8 @@ function MainTabs() {
         name="Discover"
         component={DiscoverScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="compass-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="compass-outline" activeName="compass" color={color} focused={focused} />
           ),
         }}
       />
@@ -103,8 +126,8 @@ function MainTabs() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="sparkles-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="sparkles-outline" activeName="sparkles" color={color} focused={focused} />
           ),
         }}
       />
@@ -125,8 +148,8 @@ function MainTabs() {
         name="Vouchers"
         component={VouchersScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ticket-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="ticket-outline" activeName="ticket" color={color} focused={focused} />
           ),
         }}
       />
@@ -134,8 +157,8 @@ function MainTabs() {
         name="Account"
         component={AccountScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="person-outline" activeName="person" color={color} focused={focused} />
           ),
         }}
       />
@@ -149,7 +172,7 @@ export function RootNavigator() {
   if (!isReady) {
     return (
       <View style={styles.boot}>
-        <ActivityIndicator size="large" color={colors.yellow} />
+        <ActivityIndicator size="large" color={colors.brown} />
       </View>
     );
   }
@@ -202,31 +225,52 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cream,
   },
   tabBar: {
-    height: 64,
-    paddingTop: 6,
-    paddingBottom: 8,
-    borderTopColor: colors.border,
+    height: 70,
+    paddingTop: 8,
+    paddingBottom: 10,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderSoft,
     backgroundColor: colors.surface,
+    // Shadow only — no elevation, which would clip the floating ID tab on Android
+    shadowColor: colors.brown,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 16,
+  },
+  tabItem: {
+    paddingTop: 2,
   },
   tabLabel: {
     fontFamily: fonts.bodySemi,
     fontSize: 10,
+    letterSpacing: 0.2,
+    marginTop: 1,
+  },
+  tabIcon: {
+    width: 46,
+    height: 28,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabIconOn: {
+    backgroundColor: colors.yellowSoft,
   },
   centerTab: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 18,
-    borderWidth: 3,
+    marginBottom: 16,
+    borderWidth: 4,
     borderColor: colors.surface,
-    shadowColor: colors.brown,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowColor: colors.yellowDeep,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 8,
   },
   centerTabOn: {
     backgroundColor: colors.yellowDeep,
@@ -234,7 +278,7 @@ const styles = StyleSheet.create({
   centerTabText: {
     color: colors.brown,
     fontFamily: fonts.displayExtra,
-    fontSize: 16,
+    fontSize: 17,
     letterSpacing: 0.5,
   },
 });

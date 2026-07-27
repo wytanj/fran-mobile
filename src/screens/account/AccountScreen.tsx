@@ -1,13 +1,61 @@
 import { Text } from '../../components/ThemedText';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Divider, ListRow, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { useLayout } from '../../layout/useLayout';
 import type { RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, typography } from '../../theme';
+
+/** Account destinations — all param-less, so they can be driven from data */
+type MenuRoute = 'MyDetails' | 'PurchaseHistory' | 'StoreLocator' | 'Faq' | 'Feedback' | 'Privacy';
+
+const MENU: {
+  title: string;
+  subtitle: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  route: MenuRoute;
+  tone?: 'yellow' | 'blue' | 'peach';
+}[] = [
+  {
+    title: 'My details',
+    subtitle: 'Name, contact and birthday',
+    icon: 'person-outline',
+    route: 'MyDetails',
+  },
+  {
+    title: 'Purchase history',
+    subtitle: 'Past orders and receipts',
+    icon: 'receipt-outline',
+    route: 'PurchaseHistory',
+    tone: 'blue',
+  },
+  {
+    title: 'Store locator',
+    subtitle: 'Find a Fran near you',
+    icon: 'location-outline',
+    route: 'StoreLocator',
+    tone: 'peach',
+  },
+  { title: 'FAQ', subtitle: 'Points, tiers and vouchers', icon: 'help-circle-outline', route: 'Faq' },
+  {
+    title: 'My feedback',
+    subtitle: 'Tell us how we are doing',
+    icon: 'chatbubble-ellipses-outline',
+    route: 'Feedback',
+    tone: 'blue',
+  },
+  {
+    title: 'Privacy',
+    subtitle: 'Data and account controls',
+    icon: 'shield-checkmark-outline',
+    route: 'Privacy',
+    tone: 'peach',
+  },
+];
 
 export function AccountScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -16,77 +64,66 @@ export function AccountScreen() {
 
   return (
     <Screen padded={false} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={[styles.pad, { paddingHorizontal: gutter }]}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={{ paddingHorizontal: gutter }}>
+          <Text style={styles.eyebrow}>Settings</Text>
           <Text style={styles.title}>Account</Text>
-          <View style={styles.hero}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{user.name.slice(0, 1).toUpperCase()}</Text>
+
+          <View style={[styles.hero, shadow.sm]}>
+            <View style={styles.avatarRing}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{user.name.slice(0, 1).toUpperCase()}</Text>
+              </View>
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={styles.name}>{user.name}</Text>
               <Text style={styles.meta}>{user.phone}</Text>
-              <Text style={styles.meta}>Member ID {user.memberId}</Text>
+              <View style={styles.idChip}>
+                <Text style={styles.idChipText}>ID {user.memberId}</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.grid}>
-          {[
-            { title: 'My details', icon: 'person-outline' as const, route: 'MyDetails' as const },
-            {
-              title: 'Purchase history',
-              icon: 'receipt-outline' as const,
-              route: 'PurchaseHistory' as const,
-            },
-            {
-              title: 'Store locator',
-              icon: 'location-outline' as const,
-              route: 'StoreLocator' as const,
-            },
-            { title: 'FAQ', icon: 'help-circle-outline' as const, route: 'Faq' as const },
-            {
-              title: 'My feedback',
-              icon: 'chatbubble-ellipses-outline' as const,
-              route: 'Feedback' as const,
-            },
-            {
-              title: 'Privacy',
-              icon: 'shield-checkmark-outline' as const,
-              route: 'Privacy' as const,
-            },
-          ].map((item) => (
+          <View style={[styles.group, shadow.sm]}>
+            {MENU.map((item, i) => (
+              <React.Fragment key={item.title}>
+                {i > 0 ? <Divider inset /> : null}
+                <ListRow
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  icon={item.icon}
+                  iconTone={item.tone ?? 'yellow'}
+                  onPress={() => navigation.navigate(item.route)}
+                />
+              </React.Fragment>
+            ))}
+          </View>
+
+          <View style={[styles.group, shadow.sm]}>
             <ListRow
-              key={item.title}
-              title={item.title}
-              icon={item.icon}
-              onPress={() => navigation.navigate(item.route)}
+              title="Terms of use"
+              icon="document-text-outline"
+              iconTone="cream"
+              onPress={() =>
+                Alert.alert('Terms of use', 'Full write-up will link to the Fran website.')
+              }
             />
-          ))}
-        </View>
+            <Divider inset />
+            <ListRow
+              title="Log out"
+              icon="log-out-outline"
+              danger
+              onPress={() =>
+                Alert.alert('Log out', 'Sign out of Fran?', [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Log out', style: 'destructive', onPress: () => signOut() },
+                ])
+              }
+            />
+          </View>
 
-        <View style={styles.listBlock}>
-          <ListRow
-            title="Terms of use"
-            icon="document-text-outline"
-            onPress={() =>
-              Alert.alert('Terms of use', 'Full write-up will link to the Fran website.')
-            }
-          />
-          <Divider />
-          <ListRow
-            title="Log out"
-            icon="log-out-outline"
-            danger
-            onPress={() =>
-              Alert.alert('Log out', 'Sign out of Fran?', [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Log out', style: 'destructive', onPress: () => signOut() },
-              ])
-            }
-          />
+          <Text style={styles.version}>Fran · v1.0.0 prototype</Text>
         </View>
-        <Text style={styles.version}>Fran · v1.0.0 prototype</Text>
       </ScrollView>
     </Screen>
   );
@@ -94,8 +131,8 @@ export function AccountScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingBottom: spacing.huge },
-  pad: {},
-  title: { ...typography.h1, color: colors.ink, marginTop: spacing.sm, marginBottom: spacing.lg },
+  eyebrow: { ...typography.eyebrow, marginTop: spacing.md },
+  title: { ...typography.h1, marginTop: 4, marginBottom: spacing.xl },
   hero: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -104,37 +141,49 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     marginBottom: spacing.lg,
   },
+  avatarRing: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    borderWidth: 2,
+    borderColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: { ...typography.h2, color: colors.brown },
-  name: { ...typography.h3, color: colors.ink },
-  meta: { ...typography.caption, color: colors.muted, marginTop: 2 },
-  grid: {
+  name: { ...typography.h3 },
+  meta: { ...typography.caption, marginTop: 2 },
+  idChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.surfaceSunken,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.full,
+    marginTop: spacing.sm,
+  },
+  idChipText: { ...typography.micro, color: colors.inkSoft, letterSpacing: 0.5 },
+  group: {
     backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+    overflow: 'hidden',
     marginBottom: spacing.lg,
   },
-  listBlock: {
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border,
-  },
   version: {
-    ...typography.caption,
-    color: colors.muted,
+    ...typography.micro,
     textAlign: 'center',
-    marginTop: spacing.xl,
+    marginTop: spacing.md,
   },
 });

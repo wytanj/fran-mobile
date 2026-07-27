@@ -1,18 +1,20 @@
 import { Text } from '../../components/ThemedText';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { EmptyState, Screen } from '../../components/ui';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { EmptyState, Perforation, PressableScale, Screen, Segmented } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { ContentWidth } from '../../layout/ContentWidth';
 import { useLayout } from '../../layout/useLayout';
 import type { RootStackParamList, Voucher } from '../../types';
-import { colors, radius, shadow, spacing, typography } from '../../theme';
+import { colors, press, radius, shadow, spacing, typography } from '../../theme';
+import { onFill } from '../../theme/contrast';
 
 type TabKey = 'available' | 'to_redeem' | 'past';
 
-const TABS: { key: TabKey; label: string }[] = [
+const TABS: ReadonlyArray<{ key: TabKey; label: string }> = [
   { key: 'available', label: 'Available' },
   { key: 'to_redeem', label: 'To redeem' },
   { key: 'past', label: 'Past' },
@@ -36,23 +38,17 @@ export function VouchersScreen() {
     <Screen padded={false} edges={['top']}>
       <ContentWidth style={{ paddingHorizontal: gutter }}>
         <View style={styles.header}>
-          <Text style={styles.title}>Vouchers</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.eyebrow}>Your wallet</Text>
+            <Text style={styles.title}>Vouchers</Text>
+          </View>
           <View style={styles.pointsPill}>
+            <Ionicons name="diamond" size={12} color={colors.brown} />
             <Text style={styles.pointsText}>{user.points} pts</Text>
           </View>
         </View>
 
-        <View style={styles.tabs}>
-          {TABS.map((t) => (
-            <Pressable
-              key={t.key}
-              onPress={() => setTab(t.key)}
-              style={[styles.tab, tab === t.key && styles.tabOn]}
-            >
-              <Text style={[styles.tabText, tab === t.key && styles.tabTextOn]}>{t.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <Segmented items={TABS} value={tab} onChange={setTab} style={styles.tabs} />
 
         <FlatList
           key={`vouchers-${voucherColumns}`}
@@ -61,6 +57,7 @@ export function VouchersScreen() {
           numColumns={voucherColumns}
           columnWrapperStyle={voucherColumns > 1 ? styles.row : undefined}
           contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <EmptyState
               icon="ticket-outline"
@@ -96,66 +93,77 @@ function VoucherTile({
   past: boolean;
   onPress: () => void;
 }) {
+  const fill = past ? colors.disabled : voucher.color;
+  const on = onFill(fill);
+
   return (
-    <Pressable
+    <PressableScale
       onPress={onPress}
+      scaleTo={press.scaleLarge}
+      accessibilityLabel={`${voucher.title}, ${voucher.description}`}
       style={[styles.tile, past && styles.tilePast, shadow.sm]}
     >
-      <View style={[styles.valueBox, { backgroundColor: past ? colors.disabled : voucher.color }]}>
-        <Text style={styles.value}>{voucher.valueLabel}</Text>
+      <View style={[styles.valueBox, { backgroundColor: fill }]}>
+        <Text style={[styles.value, { color: on.primary }]} numberOfLines={1}>
+          {voucher.valueLabel}
+        </Text>
+        {voucher.minSpend ? (
+          <Text style={[styles.valueMeta, { color: on.secondary }]}>Min ${voucher.minSpend}</Text>
+        ) : null}
       </View>
-      <Text style={[styles.tileTitle, past && styles.pastText]} numberOfLines={2}>
-        {voucher.title}
-      </Text>
-      <Text style={styles.tileSub} numberOfLines={1}>
-        {voucher.description}
-      </Text>
-      {voucher.pointsCost != null && voucher.status === 'to_redeem' ? (
-        <Text style={styles.cost}>{voucher.pointsCost} pts</Text>
-      ) : null}
-      {past ? (
-        <View style={styles.pastTag}>
-          <Text style={styles.pastTagText}>
-            {voucher.status === 'used' ? 'Used' : 'Expired'}
-          </Text>
+
+      <Perforation notchColor={colors.background} />
+
+      <View style={styles.tileBody}>
+        <Text style={[styles.tileTitle, past && styles.pastText]} numberOfLines={2}>
+          {voucher.title}
+        </Text>
+        <Text style={styles.tileSub} numberOfLines={2}>
+          {voucher.description}
+        </Text>
+        <View style={styles.tileFooter}>
+          {past ? (
+            <Text style={styles.pastTagText}>
+              {voucher.status === 'used' ? 'Used' : 'Expired'}
+            </Text>
+          ) : voucher.pointsCost != null && voucher.status === 'to_redeem' ? (
+            <View style={styles.costPill}>
+              <Ionicons name="diamond" size={10} color={colors.brown} />
+              <Text style={styles.cost}>{voucher.pointsCost} pts</Text>
+            </View>
+          ) : voucher.expiresAt ? (
+            <Text style={styles.expiry}>Until {voucher.expiresAt}</Text>
+          ) : null}
         </View>
-      ) : null}
-    </Pressable>
+      </View>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    paddingTop: spacing.sm,
+    paddingTop: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: spacing.md,
+  },
+  eyebrow: { ...typography.eyebrow },
+  title: { ...typography.h1, marginTop: 4 },
+  pointsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: { ...typography.h1, color: colors.ink },
-  pointsPill: {
+    gap: 5,
     backgroundColor: colors.yellowSoft,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+    paddingVertical: 6,
     borderRadius: radius.full,
+    marginBottom: 4,
   },
   pointsText: { ...typography.captionBold, color: colors.brown },
   tabs: {
-    flexDirection: 'row',
-    marginTop: spacing.lg,
-    marginBottom: spacing.md,
-    backgroundColor: colors.peachSoft,
-    borderRadius: radius.full,
-    padding: 4,
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
   },
-  tab: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-    borderRadius: radius.full,
-  },
-  tabOn: { backgroundColor: colors.surface, ...shadow.sm },
-  tabText: { ...typography.captionBold, color: colors.muted },
-  tabTextOn: { color: colors.brown },
   list: { paddingBottom: spacing.huge },
   row: { gap: spacing.md, marginBottom: spacing.md },
   tile: {
@@ -163,30 +171,39 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    minHeight: 160,
+    borderColor: colors.borderSoft,
+    paddingBottom: spacing.md,
   },
-  tilePast: { opacity: 0.55 },
+  tilePast: { opacity: 0.6 },
   valueBox: {
-    height: 64,
-    borderRadius: radius.md,
+    height: 76,
+    borderTopLeftRadius: radius.lg - 1,
+    borderTopRightRadius: radius.lg - 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.sm,
+    gap: 1,
   },
-  value: { ...typography.h1, color: colors.brown },
-  tileTitle: { ...typography.captionBold, color: colors.ink },
-  tileSub: { ...typography.micro, color: colors.muted, marginTop: 2 },
-  cost: { ...typography.captionBold, color: colors.brown, marginTop: spacing.sm },
-  pastText: { color: colors.muted },
-  pastTag: {
-    marginTop: spacing.sm,
+  value: { ...typography.h1 },
+  valueMeta: { ...typography.micro, letterSpacing: 0.4 },
+  tileBody: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+  },
+  tileTitle: { ...typography.captionBold, lineHeight: 18 },
+  tileSub: { ...typography.micro, marginTop: 3 },
+  tileFooter: { marginTop: spacing.sm, minHeight: 20, justifyContent: 'center' },
+  costPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
     alignSelf: 'flex-start',
-    backgroundColor: colors.cream,
+    backgroundColor: colors.yellowSoft,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: radius.full,
   },
-  pastTagText: { ...typography.micro, color: colors.muted },
+  cost: { ...typography.micro, color: colors.brown },
+  expiry: { ...typography.micro, color: colors.brownMuted },
+  pastText: { color: colors.brownMuted },
+  pastTagText: { ...typography.micro, color: colors.brownMuted, letterSpacing: 0.6 },
 });

@@ -2,12 +2,12 @@ import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Alert, Linking, Pressable, StyleSheet, View } from 'react-native';
-import { Header, Screen } from '../../components/ui';
+import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Header, IconTile, PressableScale, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { earnActions } from '../../data/mock';
 import type { RootStackParamList } from '../../types';
-import { colors, radius, spacing, typography } from '../../theme';
+import { colors, radius, shadow, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarnPoints'>;
 
@@ -18,14 +18,15 @@ export function EarnPointsScreen({ navigation }: Props) {
     <Screen edges={['top']}>
       <Header title="Ways to earn" onBack={() => navigation.goBack()} />
       <Text style={styles.intro}>Complete actions below to grow your points balance.</Text>
-      <View style={styles.grid}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.grid}>
         {earnActions.map((a) => {
           const done = a.oneTime && !!user.earnActionsCompleted[a.id];
           return (
-            <Pressable
+            <PressableScale
               key={a.id}
               disabled={done}
-              style={[styles.cell, done && styles.cellDone]}
+              accessibilityLabel={`${a.title}, ${done ? 'completed' : `plus ${a.points} points`}`}
+              style={[styles.cell, done ? styles.cellDone : shadow.sm]}
               onPress={async () => {
                 if (a.kind === 'social') {
                   const url =
@@ -50,39 +51,52 @@ export function EarnPointsScreen({ navigation }: Props) {
                 }
               }}
             >
-              <Ionicons
-                name={a.icon as any}
-                size={28}
-                color={done ? colors.disabled : colors.brown}
+              <IconTile
+                icon={a.icon as keyof typeof Ionicons.glyphMap}
+                tone={done ? 'cream' : 'yellow'}
+                size={42}
               />
               <Text style={[styles.title, done && styles.done]}>{a.title}</Text>
-              <Text style={[styles.pts, done && styles.done]}>
-                {done ? 'Completed' : `+${a.points} pts`}
-              </Text>
-            </Pressable>
+              {done ? (
+                <View style={styles.doneRow}>
+                  <Ionicons name="checkmark-circle" size={13} color={colors.success} />
+                  <Text style={styles.doneText}>Completed</Text>
+                </View>
+              ) : (
+                <Text style={styles.pts}>+{a.points} pts</Text>
+              )}
+            </PressableScale>
           );
         })}
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   intro: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xl },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    paddingBottom: spacing.huge,
+  },
   cell: {
-    width: '47%',
+    flexGrow: 1,
+    flexBasis: '45%',
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderSoft,
     padding: spacing.lg,
-    minHeight: 130,
+    minHeight: 138,
     justifyContent: 'center',
     gap: spacing.sm,
   },
-  cellDone: { opacity: 0.55, backgroundColor: colors.cream },
-  title: { ...typography.bodyBold, color: colors.ink },
+  cellDone: { backgroundColor: colors.surfaceSunken, borderColor: 'transparent' },
+  title: { ...typography.title },
   pts: { ...typography.captionBold, color: colors.brown },
-  done: { color: colors.muted },
+  doneRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  doneText: { ...typography.micro, color: colors.success },
+  done: { color: colors.brownMuted },
 });

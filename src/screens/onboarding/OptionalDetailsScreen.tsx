@@ -1,10 +1,11 @@
 import { Text } from '../../components/ThemedText';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Button, Header, Input, Screen } from '../../components/ui';
 import type { OnboardingStackParamList } from '../../types';
-import { colors, spacing, typography } from '../../theme';
+import { colors, radius, spacing, typography } from '../../theme';
 import { formatBirthdayInput } from '../../utils/formatBirthdayInput';
 import { signupDraft } from './NameScreen';
 
@@ -33,6 +34,9 @@ export function OptionalDetailsScreen({ navigation }: Props) {
         style={{ flex: 1 }}
       >
         <View style={styles.content}>
+          <View style={styles.iconWell}>
+            <Ionicons name="gift-outline" size={22} color={colors.brown} />
+          </View>
           <Text style={styles.title}>Optional details</Text>
           <Text style={styles.sub}>
             Skip for now if you like. Birthday unlocks +10 profile points later; email helps with
@@ -45,6 +49,7 @@ export function OptionalDetailsScreen({ navigation }: Props) {
             onChangeText={(text) => setBirthday(formatBirthdayInput(text))}
             keyboardType="number-pad"
             maxLength={10}
+            hint="Worth +10 points — and it can only be set once."
           />
           <Input
             label="Email (optional)"
@@ -55,8 +60,17 @@ export function OptionalDetailsScreen({ navigation }: Props) {
             autoCapitalize="none"
           />
         </View>
-        <Button title="Continue" onPress={() => goNext(false)} />
-        <Pressable onPress={() => goNext(true)} style={styles.skip}>
+        <Button
+          title="Continue"
+          onPress={() => goNext(false)}
+          icon="arrow-forward"
+          iconAfter
+        />
+        <Pressable
+          onPress={() => goNext(true)}
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.skip, pressed && { opacity: 0.6 }]}
+        >
           <Text style={styles.skipText}>Skip for now</Text>
         </Pressable>
       </KeyboardAvoidingView>
@@ -66,7 +80,16 @@ export function OptionalDetailsScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   content: { flex: 1, paddingTop: spacing.lg },
-  title: { ...typography.h1, color: colors.ink, marginBottom: spacing.sm },
+  iconWell: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.lg,
+    backgroundColor: colors.yellowSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  title: { ...typography.h1, marginBottom: spacing.sm },
   sub: { ...typography.body, color: colors.inkSoft, marginBottom: spacing.xxl },
   skip: { alignItems: 'center', paddingVertical: spacing.lg, marginBottom: spacing.sm },
   skipText: { ...typography.bodyBold, color: colors.brown },
