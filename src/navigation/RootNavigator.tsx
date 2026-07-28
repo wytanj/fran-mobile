@@ -1,4 +1,3 @@
-import { Text } from '../components/ThemedText';
 import { FranIcon, type FranIconName } from '../components/FranIcon';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
@@ -101,8 +100,9 @@ function MainTabs() {
         headerShown: false,
         tabBarActiveTintColor: colors.brown,
         tabBarInactiveTintColor: colors.tabInactive,
-        // Full-width bar stays thumb-friendly on open foldables (edge reach)
+        // Float the navigation surface slightly inside the screen edges.
         tabBarStyle: styles.tabBar,
+        tabBarBackground: () => <View style={styles.tabBarBackground} />,
         tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: StyleSheet.flatten([
           styles.tabLabel,
@@ -134,11 +134,12 @@ function MainTabs() {
         name="MemberId"
         component={MemberIdScreen}
         options={{
-          tabBarLabel: 'Member ID',
-          tabBarLabelPosition: 'below-icon',
+          tabBarLabel: () => null,
+          tabBarAccessibilityLabel: 'Member ID',
+          tabBarItemStyle: [styles.tabItem, styles.centerTabItem],
           tabBarIcon: ({ focused }) => (
             <View style={[styles.centerTab, focused && styles.centerTabOn]}>
-              <Text style={styles.centerTabText}>ID</Text>
+              <FranIcon name="qr" size={23} color={colors.brown} />
             </View>
           ),
         }}
@@ -224,22 +225,34 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cream,
   },
   tabBar: {
-    // 8 top + 2 item + 38 icon slot + 3 + ~13 label + 10 bottom = 74, plus 2
-    // slack so a label descender can't clip if the font metrics run tall.
-    height: 76,
-    paddingTop: 8,
-    paddingBottom: 10,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderSoft,
+    height: 64,
+    marginHorizontal: 12,
+    marginBottom: 10,
+    paddingTop: 6,
+    paddingBottom: 6,
+    borderTopWidth: 0,
+    borderRadius: 22,
+    backgroundColor: 'transparent',
+    overflow: 'visible',
+  },
+  tabBarBackground: {
+    flex: 1,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
     backgroundColor: colors.surface,
-    // Shadow only — no elevation, which would clip the floating ID tab on Android
     shadowColor: colors.brown,
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.16,
+    shadowRadius: 18,
+    elevation: 10,
   },
   tabItem: {
-    paddingTop: 2,
+    paddingTop: 0,
+  },
+  centerTabItem: {
+    // A narrower centre slot pulls the adjacent Profile and Vouchers tabs in.
+    flex: 0.72,
   },
   tabLabel: {
     fontFamily: fonts.bodySemi,
@@ -258,18 +271,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellowSoft,
   },
   centerTab: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
-    // The button has to clear the bar without crowding its label, and those
-    // pull in opposite directions. marginTop lifts it; marginBottom is the
-    // gap the label sits below. Their sum is the height the button gives back
-    // to the column, so keep it at -16 (54 - 22 + 6 = 38, the icon slot).
-    marginTop: -22,
-    marginBottom: 6,
+    // The QR has no label, so shift it to the vertical centre of the bar.
+    transform: [{ translateY: 7 }],
     borderWidth: 4,
     borderColor: colors.surface,
     shadowColor: colors.yellowDeep,
@@ -280,11 +289,5 @@ const styles = StyleSheet.create({
   },
   centerTabOn: {
     backgroundColor: colors.yellowDeep,
-  },
-  centerTabText: {
-    color: colors.brown,
-    fontFamily: fonts.displayExtra,
-    fontSize: 17,
-    letterSpacing: 0.5,
   },
 });
