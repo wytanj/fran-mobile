@@ -6,7 +6,6 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { resolveFontFamily, useTypography } from '../context/TypographyContext';
 import { useUser } from '../context/UserContext';
-import { AccountScreen } from '../screens/account/AccountScreen';
 import { FaqScreen } from '../screens/account/FaqScreen';
 import { FeedbackScreen } from '../screens/account/FeedbackScreen';
 import { MyDetailsScreen } from '../screens/account/MyDetailsScreen';
@@ -14,11 +13,16 @@ import { OrderDetailScreen } from '../screens/account/OrderDetailScreen';
 import { PrivacyScreen } from '../screens/account/PrivacyScreen';
 import { PurchaseHistoryScreen } from '../screens/account/PurchaseHistoryScreen';
 import { StoreLocatorScreen } from '../screens/account/StoreLocatorScreen';
+import { CatalogScreen } from '../screens/catalog/CatalogScreen';
+import { WishlistScreen } from '../screens/catalog/WishlistScreen';
 import { DiscoverScreen } from '../screens/discover/DiscoverScreen';
 import { ExpiringPointsScreen } from '../screens/discover/ExpiringPointsScreen';
 import { PromoDetailScreen } from '../screens/discover/PromoDetailScreen';
 import { TransactionsScreen } from '../screens/discover/TransactionsScreen';
+import { GrwmScreen } from '../screens/grwm/GrwmScreen';
+import { HomeScreen } from '../screens/home/HomeScreen';
 import { MemberIdScreen } from '../screens/memberId/MemberIdScreen';
+import { PdpScreen } from '../screens/pdp/PdpScreen';
 import { NameScreen } from '../screens/onboarding/NameScreen';
 import { OptionalDetailsScreen } from '../screens/onboarding/OptionalDetailsScreen';
 import { OtpScreen } from '../screens/onboarding/OtpScreen';
@@ -102,60 +106,65 @@ function MainTabs() {
         tabBarInactiveTintColor: colors.tabInactive,
         // Float the navigation surface slightly inside the screen edges.
         tabBarStyle: styles.tabBar,
-        tabBarBackground: () => <View style={styles.tabBarBackground} />,
         tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: StyleSheet.flatten([
           styles.tabLabel,
           { fontFamily: resolveFontFamily(variant, fonts.bodySemi) },
         ]),
-        // Foldables / tablets default to label-beside-icon; keep phone layout
         tabBarLabelPosition: 'below-icon',
       }}
     >
       <Tab.Screen
-        name="Discover"
-        component={DiscoverScreen}
+        name="Home"
+        component={HomeScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="discover" color={color} focused={focused} />
+            <TabIcon name="store" color={color} focused={focused} />
           ),
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Grwm"
+        component={GrwmScreen}
         options={{
+          tabBarLabel: 'GRWM',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name="glow" color={color} focused={focused} />
           ),
         }}
       />
       <Tab.Screen
-        name="MemberId"
-        component={MemberIdScreen}
+        name="Club"
+        component={HomeScreen}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.getParent()?.navigate('MemberId');
+          },
+        })}
         options={{
           tabBarLabel: () => null,
           tabBarAccessibilityLabel: 'Member ID',
           tabBarItemStyle: [styles.tabItem, styles.centerTabItem],
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.centerTab, focused && styles.centerTabOn]}>
-              <FranIcon name="qr" size={23} color={colors.brown} />
+          tabBarIcon: () => (
+            <View style={styles.centerTab}>
+              <FranIcon name="faceSmile" size={23} color={colors.brown} />
             </View>
           ),
         }}
       />
       <Tab.Screen
-        name="Vouchers"
-        component={VouchersScreen}
+        name="Catalog"
+        component={CatalogScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="ticket" color={color} focused={focused} />
+            <TabIcon name="book" color={color} focused={focused} />
           ),
         }}
       />
       <Tab.Screen
-        name="Account"
-        component={AccountScreen}
+        name="Profile"
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name="person" color={color} focused={focused} />
@@ -185,6 +194,11 @@ export function RootNavigator() {
         ) : (
           <>
             <RootStack.Screen name="Main" component={MainTabs} />
+            <RootStack.Screen name="MemberId" component={MemberIdScreen} />
+            <RootStack.Screen name="Vouchers" component={VouchersScreen} />
+            <RootStack.Screen name="Discover" component={DiscoverScreen} />
+            <RootStack.Screen name="Wishlist" component={WishlistScreen} />
+            <RootStack.Screen name="Pdp" component={PdpScreen} />
             <RootStack.Screen
               name="PromoDetail"
               component={PromoDetailScreen}
@@ -225,27 +239,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cream,
   },
   tabBar: {
-    height: 64,
-    marginHorizontal: 12,
-    marginBottom: 10,
+    height: 72,
     paddingTop: 6,
-    paddingBottom: 6,
-    borderTopWidth: 0,
-    borderRadius: 22,
-    backgroundColor: 'transparent',
-    overflow: 'visible',
-  },
-  tabBarBackground: {
-    flex: 1,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: colors.borderSoft,
+    paddingBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderSoft,
     backgroundColor: colors.surface,
-    shadowColor: colors.brown,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
-    elevation: 10,
+    elevation: 0,
   },
   tabItem: {
     paddingTop: 0,
@@ -277,17 +277,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
-    // The QR has no label, so shift it to the vertical centre of the bar.
-    transform: [{ translateY: 7 }],
-    borderWidth: 4,
-    borderColor: colors.surface,
-    shadowColor: colors.yellowDeep,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 8,
-  },
-  centerTabOn: {
-    backgroundColor: colors.yellowDeep,
+    transform: [{ translateY: 6 }],
+    borderWidth: 3,
+    borderColor: colors.brown,
   },
 });

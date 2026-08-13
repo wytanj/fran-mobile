@@ -19,6 +19,7 @@ import type {
 const STORAGE_KEY = '@fran/user';
 const VOUCHERS_KEY = '@fran/vouchers';
 const AUTH_KEY = '@fran/authed';
+const WISHLIST_KEY = '@fran/wishlist';
 
 type UserContextValue = {
   user: User;
@@ -39,6 +40,8 @@ type UserContextValue = {
   claimPromoVoucher: (promoId: string) => Promise<Voucher | null>;
   redeemVoucher: (voucherId: string) => Promise<boolean>;
   availableVoucherCount: number;
+  wishlist: string[];
+  toggleWishlist: (productId: string) => Promise<void>;
 };
 
 const UserContext = createContext<UserContextValue | null>(null);
@@ -54,18 +57,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [vouchers, setVouchers] = useState<Voucher[]>(seedVouchers);
   const [isAuthed, setIsAuthed] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [wishlist, setWishlist] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const [u, v, a] = await Promise.all([
+        const [u, v, a, w] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEY),
           AsyncStorage.getItem(VOUCHERS_KEY),
           AsyncStorage.getItem(AUTH_KEY),
+          AsyncStorage.getItem(WISHLIST_KEY),
         ]);
         if (u) setUser(JSON.parse(u));
         if (v) setVouchers(JSON.parse(v));
         if (a === '1') setIsAuthed(true);
+        if (w) setWishlist(JSON.parse(w));
       } finally {
         setIsReady(true);
       }
@@ -255,6 +261,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     [vouchers],
   );
 
+  const toggleWishlist = useCallback(async (productId: string) => {
+    setWishlist((prev) => {
+      const next = prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId];
+      void AsyncStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -272,6 +288,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       claimPromoVoucher,
       redeemVoucher,
       availableVoucherCount,
+      wishlist,
+      toggleWishlist,
     }),
     [
       user,
@@ -289,6 +307,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       claimPromoVoucher,
       redeemVoucher,
       availableVoucherCount,
+      wishlist,
+      toggleWishlist,
     ],
   );
 

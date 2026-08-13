@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
+  Alert,
   LayoutAnimation,
   Platform,
   Pressable,
@@ -15,6 +16,7 @@ import {
 import {
   Badge,
   Card,
+  ListRow,
   PressableScale,
   ProgressBar,
   Screen,
@@ -33,7 +35,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 export function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { user, availableVoucherCount } = useUser();
+  const { user, availableVoucherCount, signOut } = useUser();
   const { gutter, earnTileWidth, earnGap } = useLayout();
   const [earnOpen, setEarnOpen] = useState(true);
   const tierInfo = tiers.find((t) => t.tier === user.tier)!;
@@ -153,7 +155,7 @@ export function ProfileScreen() {
             </PressableScale>
             <PressableScale
               style={[styles.statCard, shadow.sm]}
-              onPress={() => navigation.getParent()?.navigate('Vouchers' as never)}
+              onPress={() => navigation.navigate('Vouchers')}
               accessibilityLabel={`${availableVoucherCount} vouchers available`}
             >
               <View style={styles.statHead}>
@@ -199,7 +201,7 @@ export function ProfileScreen() {
                     onPress={() => {
                       if (a.kind === 'checkin') {
                         // switch tab — navigate parent
-                        navigation.getParent()?.navigate('Discover' as never);
+                        navigation.navigate('Discover');
                         return;
                       }
                       if (a.kind === 'birthday') {
@@ -276,6 +278,64 @@ export function ProfileScreen() {
                 </Pressable>
               );
             })}
+          </Card>
+
+          <SectionTitle title="Wallet & rewards" />
+          <Card padded={false} style={styles.beautyCard}>
+            <ListRow
+              icon="ticket"
+              title="Vouchers"
+              subtitle="Wallet and redemptions"
+              onPress={() => navigation.navigate('Vouchers')}
+            />
+            <ListRow
+              icon="flame"
+              title="Daily check-in"
+              subtitle="Streaks and points"
+              onPress={() => navigation.navigate('Discover')}
+            />
+          </Card>
+
+          <SectionTitle title="Account" />
+          <Card padded={false} style={styles.beautyCard}>
+            <ListRow
+              icon="person"
+              title="My details"
+              subtitle="Name, contact and birthday"
+              onPress={() => navigation.navigate('MyDetails')}
+            />
+            <ListRow
+              icon="receipt"
+              title="Purchase history"
+              onPress={() => navigation.navigate('PurchaseHistory')}
+            />
+            <ListRow
+              icon="pin"
+              title="Store locator"
+              onPress={() => navigation.navigate('StoreLocator')}
+            />
+            <ListRow icon="help" title="FAQ" onPress={() => navigation.navigate('Faq')} />
+            <ListRow
+              icon="chat"
+              title="My feedback"
+              onPress={() => navigation.navigate('Feedback')}
+            />
+            <ListRow
+              icon="shield"
+              title="Privacy"
+              onPress={() => navigation.navigate('Privacy')}
+            />
+            <ListRow
+              icon="logout"
+              title="Log out"
+              danger
+              onPress={() =>
+                Alert.alert('Log out', 'Sign out of this device?', [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Log out', style: 'destructive', onPress: () => void signOut() },
+                ])
+              }
+            />
           </Card>
 
           <Card tone="sunken" elevation="none" style={styles.comingSoon}>

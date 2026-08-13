@@ -40,7 +40,7 @@ export default function App() {
             <StatusBar style="dark" />
             <View style={styles.appFrame}>
               <RootNavigator />
-              <TypographySelector />
+              {__DEV__ ? <TypographySelector /> : null}
             </View>
           </UserProvider>
         </TypographyProvider>

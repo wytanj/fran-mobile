@@ -22,6 +22,7 @@ import {
   Dots,
   IconTile,
   PressableScale,
+  Header,
   ProgressBar,
   Screen,
   SectionTitle,
@@ -64,6 +65,7 @@ export function DiscoverScreen() {
 
   return (
     <Screen padded={false} edges={['top']}>
+      <Header title="Check-in" onBack={() => navigation.goBack()} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <ContentWidth flex={false} style={{ paddingHorizontal: gutter }}>
           <View style={styles.topBar}>

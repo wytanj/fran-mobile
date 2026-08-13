@@ -47,7 +47,7 @@ export function EarnPointsScreen({ navigation }: Props) {
                   return;
                 }
                 if (a.kind === 'checkin') {
-                  navigation.getParent()?.navigate('Discover' as never);
+                  navigation.navigate('Discover');
                 }
               }}
             >

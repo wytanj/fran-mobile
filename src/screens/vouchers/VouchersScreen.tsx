@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { EmptyState, Perforation, PressableScale, Screen, Segmented } from '../../components/ui';
+import { EmptyState, Header, Perforation, PressableScale, Screen, Segmented } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { ContentWidth } from '../../layout/ContentWidth';
 import { useLayout } from '../../layout/useLayout';
@@ -36,6 +36,7 @@ export function VouchersScreen() {
 
   return (
     <Screen padded={false} edges={['top']}>
+      <Header title="Vouchers" onBack={() => navigation.goBack()} />
       <ContentWidth style={{ paddingHorizontal: gutter }}>
         <View style={styles.header}>
           <View style={{ flex: 1 }}>

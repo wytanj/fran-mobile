@@ -58,6 +58,49 @@ export interface BundleBanner {
   color: string;
 }
 
+export type CatalogCategory = 'all' | 'skincare' | 'makeup' | 'hair' | 'bundles';
+
+export interface Product {
+  id: string;
+  brand: string;
+  name: string;
+  category: Exclude<CatalogCategory, 'all' | 'bundles'>;
+  price: number;
+  compareAt?: number;
+  rating: number;
+  reviewCount: number;
+  image: number;
+  description: string;
+  ingredients: string[];
+  tags?: string[];
+}
+
+export interface ProductReview {
+  id: string;
+  productId: string;
+  author: string;
+  rating: number;
+  text: string;
+}
+
+export interface Bestie {
+  id: string;
+  handle: string;
+  image: number;
+}
+
+export interface GrwmBundle {
+  id: string;
+  title: string;
+  creator: string;
+  creatorImage: number;
+  price: number;
+  compareAt?: number;
+  image: number;
+  productIds: string[];
+  featured?: boolean;
+}
+
 export interface Voucher {
   id: string;
   title: string;
@@ -160,6 +203,11 @@ export type RootStackParamList = {
   Faq: undefined;
   Feedback: undefined;
   BirthdayModal: undefined;
+  MemberId: undefined;
+  Vouchers: undefined;
+  Discover: undefined;
+  Wishlist: undefined;
+  Pdp: { productId: string };
 };
 
 export type OnboardingStackParamList = {
@@ -178,9 +226,9 @@ export type OnboardingStackParamList = {
 };
 
 export type MainTabParamList = {
-  Discover: undefined;
+  Home: undefined;
+  Grwm: undefined;
+  Club: undefined;
+  Catalog: undefined;
   Profile: undefined;
-  MemberId: undefined;
-  Vouchers: undefined;
-  Account: undefined;
 };

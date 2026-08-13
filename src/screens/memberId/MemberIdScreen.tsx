@@ -1,16 +1,16 @@
 import { Text } from '../../components/ThemedText';
 import { FranIcon } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { FranLogo } from '../../components/FranLogo';
-import { PressableScale, Screen } from '../../components/ui';
+import { Header, PressableScale, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { ContentWidth } from '../../layout/ContentWidth';
 import { useLayout } from '../../layout/useLayout';
-import type { MainTabParamList } from '../../types';
+import type { RootStackParamList } from '../../types';
 import { colors, fonts, radius, shadow, spacing, tint, typography } from '../../theme';
 
 /** Simple visual QR placeholder for prototype (no native QR lib required). */
@@ -48,12 +48,13 @@ function QrPlaceholder({ value, size }: { value: string; size: number }) {
 
 export function MemberIdScreen() {
   const { user, availableVoucherCount } = useUser();
-  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { gutter, useSplitPanels, isExpanded } = useLayout();
   const qrSize = isExpanded ? 240 : 200;
 
   return (
     <Screen padded={false} edges={['top', 'bottom']} constrain={false} style={styles.wrap}>
+      <Header title="Member ID" onBack={() => navigation.goBack()} />
       <LinearGradient
         colors={[colors.yellow, colors.yellowDeep]}
         start={{ x: 0.1, y: 0 }}
