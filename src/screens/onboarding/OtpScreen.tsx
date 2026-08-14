@@ -10,7 +10,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { Button, Header, Screen } from '../../components/ui';
+import { Button, Screen } from '../../components/ui';
 import {
   DEMO_OTP_CODE,
   OTP_LENGTH,
@@ -131,27 +131,29 @@ export function OtpScreen({ navigation, route }: Props) {
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <Header title="Verify" onBack={() => navigation.goBack()} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
+        <View style={styles.nav}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <FranIcon name="chevronLeft" size={22} color={colors.brown} />
+          </Pressable>
+          <Text style={styles.navTitle}>{mode === 'signup' ? 'Sign up' : 'Log in'}</Text>
+        </View>
         <View style={styles.content}>
-          <View style={styles.lockWell}>
-            <FranIcon name="chat" size={22} color={colors.brown} />
-          </View>
-          <Text style={styles.title}>Enter OTP</Text>
+          <Text style={styles.title}>Enter the code</Text>
           <Text style={styles.sub}>
-            {TWILIO_AUTH_ENABLED ? 'Code sent to ' : 'Demo verify for '}
-            <Text style={styles.phone}>{phone}</Text>
+            {TWILIO_AUTH_ENABLED
+              ? 'A verification code has been sent to'
+              : `Demo verify — enter ${DEMO_OTP_CODE}`}
           </Text>
-          <View style={styles.hintChip}>
-            <Text style={styles.hint}>
-              {TWILIO_AUTH_ENABLED
-                ? `SMS · Singapore · ${OTP_LENGTH}-digit code`
-                : `Demo mode — enter ${DEMO_OTP_CODE}`}
-            </Text>
-          </View>
+          <Text style={styles.phone}>{phone}</Text>
 
           <View style={styles.otpRow}>
             {otp.map((d, i) => (
@@ -179,6 +181,13 @@ export function OtpScreen({ navigation, route }: Props) {
             </View>
           ) : null}
 
+          <Button
+            title="Next"
+            onPress={verify}
+            loading={loading}
+            disabled={code.length < OTP_LENGTH}
+            style={styles.next}
+          />
           <Pressable
             disabled={seconds > 0 || resending}
             onPress={onResend}
@@ -194,46 +203,28 @@ export function OtpScreen({ navigation, route }: Props) {
               {resending
                 ? 'Sending…'
                 : seconds > 0
-                  ? `Resend code in ${seconds}s`
-                  : 'Resend code'}
+                  ? `Resend OTP in ${seconds}s`
+                  : 'Resend OTP'}
             </Text>
           </Pressable>
         </View>
-        <Button
-          title="Verify"
-          onPress={verify}
-          loading={loading}
-          style={{ marginBottom: spacing.lg }}
-        />
       </KeyboardAvoidingView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { flex: 1, paddingTop: spacing.lg },
-  lockWell: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.lg,
-    backgroundColor: colors.yellowSoft,
+  nav: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
+    gap: spacing.sm,
+    paddingBottom: spacing.lg,
   },
-  title: { ...typography.h1 },
-  sub: { ...typography.body, color: colors.inkSoft, marginTop: spacing.sm },
-  phone: { fontFamily: fonts.bodySemi, color: colors.ink },
-  hintChip: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.surfaceSunken,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 5,
-    borderRadius: radius.full,
-    marginTop: spacing.md,
-    marginBottom: spacing.xxxl,
-  },
-  hint: { ...typography.micro, color: colors.inkSoft },
+  navTitle: { ...typography.h2, color: colors.brown },
+  content: { flex: 1, paddingTop: spacing.md },
+  title: { ...typography.title, fontFamily: fonts.bodyBold, marginBottom: 4 },
+  sub: { ...typography.caption, color: colors.inkSoft },
+  phone: { ...typography.captionBold, color: colors.ink, marginBottom: spacing.xxl },
   otpRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -273,6 +264,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   error: { ...typography.caption, color: colors.danger },
-  resend: { marginTop: spacing.xl, alignSelf: 'center' },
+  next: { marginTop: spacing.lg },
+  resend: { marginTop: spacing.lg, alignSelf: 'center' },
   resendText: { ...typography.bodyBold, color: colors.brown },
 });

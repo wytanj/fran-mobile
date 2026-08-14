@@ -22,6 +22,7 @@ import { PromoDetailScreen } from '../screens/discover/PromoDetailScreen';
 import { TransactionsScreen } from '../screens/discover/TransactionsScreen';
 import { GrwmScreen } from '../screens/grwm/GrwmScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
+import { RewardsScreen } from '../screens/rewards/RewardsScreen';
 import { MemberIdScreen } from '../screens/memberId/MemberIdScreen';
 import { PdpScreen } from '../screens/pdp/PdpScreen';
 import { NameScreen } from '../screens/onboarding/NameScreen';
@@ -125,12 +126,11 @@ function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Grwm"
-        component={GrwmScreen}
+        name="Rewards"
+        component={RewardsScreen}
         options={{
-          tabBarLabel: 'GRWM',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="glow" color={color} focused={focused} />
+            <TabIcon name="gem" color={color} focused={focused} />
           ),
         }}
       />
@@ -194,6 +194,7 @@ export function RootNavigator() {
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         <RootStack.Screen name="Main" component={MainTabs} />
         <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
+        <RootStack.Screen name="Grwm" component={GrwmScreen} />
         <RootStack.Screen name="MemberId" component={MemberIdScreen} />
         <RootStack.Screen name="Vouchers" component={VouchersScreen} />
         <RootStack.Screen name="Discover" component={DiscoverScreen} />

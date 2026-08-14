@@ -185,15 +185,18 @@ export interface QuizQuestion {
 
 export type MainTabParamList = {
   Home: undefined;
-  Grwm: undefined;
+  Rewards: undefined;
   Club: undefined;
   Catalog: undefined;
   Profile: undefined;
 };
 
 export type RootStackParamList = {
-  Onboarding: undefined;
+  Onboarding:
+    | import('@react-navigation/native').NavigatorScreenParams<OnboardingStackParamList>
+    | undefined;
   Main: import('@react-navigation/native').NavigatorScreenParams<MainTabParamList> | undefined;
+  Grwm: undefined;
   PromoDetail: { promoId: string };
   Transactions: undefined;
   ExpiringPoints: undefined;

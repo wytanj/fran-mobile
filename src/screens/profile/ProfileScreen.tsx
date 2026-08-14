@@ -158,6 +158,12 @@ export function ProfileScreen() {
         {isAuthed ? (
           <View style={{ marginTop: spacing.xl }}>
             <ListRow
+              icon="gem"
+              title="Rewards"
+              subtitle="Points, vouchers, ways to earn"
+              onPress={() => navigation.navigate('Main', { screen: 'Rewards' })}
+            />
+            <ListRow
               icon="person"
               title="Account"
               subtitle="Details, orders, privacy"

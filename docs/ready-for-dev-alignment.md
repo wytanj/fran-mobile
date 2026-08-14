@@ -1,6 +1,8 @@
 # Align fran-mobile to Figma Ready for Dev (keep present tokens)
 
-**Figma (current):** [fran-app (aug26) - wip](https://www.figma.com/design/lUTIEfH8vnd6rPLr1IogYx/fran-app--aug26---wip-?node-id=0-1&m=dev) — fileKey `lUTIEfH8vnd6rPLr1IogYx`, page `0:1`. Use this file’s **Ready** frames only.
+**Figma (current):** [fran-app (aug26) - wip](https://www.figma.com/design/lUTIEfH8vnd6rPLr1IogYx/fran-app--aug26---wip-?node-id=0-1&m=dev) — fileKey `lUTIEfH8vnd6rPLr1IogYx`, page `0:1`.
+
+Shipped from this file: Member ID, You, Rewards (`45:1088` / `45:3797`), new-user login (`40:3176` / `40:2418`). Keep present tokens.
 
 **Superseded:** LISE App `mwit2fthu3gfcXh2okg3G1` (Ready `565:7073` and Ready for Dev `203:1708`). Do not implement from those.
 
