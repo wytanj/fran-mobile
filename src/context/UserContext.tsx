@@ -155,7 +155,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         answers,
         completedAt: new Date().toISOString(),
       };
-      const points = 15;
+      const points = 25;
       await persistUser({
         ...user,
         points: user.points + points,

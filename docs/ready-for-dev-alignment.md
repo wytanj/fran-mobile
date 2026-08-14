@@ -1,10 +1,8 @@
 # Align fran-mobile to Figma Ready for Dev (keep present tokens)
 
-**Figma:** [LISE App (WIP)](https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=203-1708&m=dev)
+**Figma (current):** [fran-app (aug26) - wip](https://www.figma.com/design/lUTIEfH8vnd6rPLr1IogYx/fran-app--aug26---wip-?node-id=0-1&m=dev) — fileKey `lUTIEfH8vnd6rPLr1IogYx`, page `0:1`. Use this file’s **Ready** frames only.
 
-**Flow source of truth (superseded 15 Aug 2026):** use Figma page **Ready** (`565:7073`) from now on — https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=565-7073
-
-This file described the older **Ready for Dev** (`203:1708`) pass. Do not implement new work from that section.
+**Superseded:** LISE App `mwit2fthu3gfcXh2okg3G1` (Ready `565:7073` and Ready for Dev `203:1708`). Do not implement from those.
 
 **Visual source of truth:** **this repo's present theme** — do not rematch Figma hex or typefaces
 

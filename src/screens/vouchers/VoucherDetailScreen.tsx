@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Alert, LayoutAnimation, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Badge, Button, Header, Perforation, Screen } from '../../components/ui';
+import { QrMark } from '../../components/QrMark';
 import { useUser } from '../../context/UserContext';
 import type { RootStackParamList } from '../../types';
 import { colors, radius, shadow, spacing, tint, typography } from '../../theme';
@@ -14,14 +15,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'VoucherDetail'>;
 export function VoucherDetailScreen({ navigation, route }: Props) {
   const { vouchers, user, redeemVoucher } = useUser();
   const voucher = vouchers.find((v) => v.id === route.params.voucherId);
-  const [termsOpen, setTermsOpen] = useState(false);
-  const [showQr, setShowQr] = useState(false);
+  const [showQr, setShowQr] = useState(true);
   const [loading, setLoading] = useState(false);
 
   if (!voucher) {
     return (
       <Screen edges={['top']}>
-        <Header title="Voucher" onBack={() => navigation.goBack()} />
+        <Header title="Voucher details" onBack={() => navigation.goBack()} />
         <Text style={styles.missing}>Voucher not found.</Text>
       </Screen>
     );
@@ -56,7 +56,7 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <Header title="Voucher" onBack={() => navigation.goBack()} />
+      <Header title="Voucher details" onBack={() => navigation.goBack()} />
       <ScrollView
         contentContainerStyle={{ paddingBottom: spacing.xxl }}
         showsVerticalScrollIndicator={false}
@@ -117,48 +117,31 @@ export function VoucherDetailScreen({ navigation, route }: Props) {
           </View>
         </View>
 
-        {showQr && voucher.status === 'available' ? (
-          <View style={[styles.qrCard, shadow.sm]}>
-            <View style={styles.qrFrame}>
-              <FranIcon name="qr" size={132} color={colors.ink} />
-            </View>
-            <Text style={styles.qrHint}>Show this code at checkout</Text>
-            <Text style={styles.qrId}>{user.memberId}</Text>
+        <View style={[styles.qrCard, shadow.sm]}>
+          <Text style={styles.qrHint}>Scan at checkout</Text>
+          <View style={styles.qrWrap}>
+            <QrMark value={`${user.memberId}-${voucher.id}`} size={180} />
+            {voucher.status === 'used' ? (
+              <View style={styles.stamp} pointerEvents="none">
+                <Text style={styles.stampText}>REDEEMED</Text>
+              </View>
+            ) : null}
           </View>
-        ) : null}
+          <Text style={styles.qrId}>* {voucher.id.toUpperCase()} *</Text>
+        </View>
 
-        <Pressable
-          onPress={() => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-            setTermsOpen((v) => !v);
-          }}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: termsOpen }}
-          style={styles.termsHeader}
-        >
-          <Text style={styles.termsTitle}>Terms & conditions</Text>
-          <View style={styles.chevronWell}>
-            <FranIcon
-              name={termsOpen ? 'chevronUp' : 'chevronDown'}
-              size={16}
-              color={colors.brown}
-            />
-          </View>
-        </Pressable>
-        {termsOpen ? (
-          <View style={styles.terms}>
-            {voucher.terms.length ? (
-              voucher.terms.map((t, i) => (
-                <View key={i} style={styles.termRow}>
-                  <View style={styles.termDot} />
-                  <Text style={styles.term}>{t}</Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.term}>No additional terms.</Text>
-            )}
-          </View>
-        ) : null}
+        <Text style={styles.termsTitle}>Terms & Conditions</Text>
+        <View style={styles.terms}>
+          {voucher.terms.length ? (
+            voucher.terms.map((t, i) => (
+              <View key={i} style={styles.termRow}>
+                <Text style={styles.term}>• {t}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.term}>No additional terms.</Text>
+          )}
+        </View>
       </ScrollView>
 
       {!past ? (
@@ -240,8 +223,18 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.yellow,
   },
-  qrHint: { ...typography.caption, marginTop: spacing.lg },
-  qrId: { ...typography.bodyBold, marginTop: 2, letterSpacing: 1.5 },
+  qrHint: { ...typography.eyebrow, marginBottom: spacing.md },
+  qrWrap: { alignItems: 'center', justifyContent: 'center' },
+  stamp: {
+    position: 'absolute',
+    transform: [{ rotate: '-18deg' }],
+    borderWidth: 3,
+    borderColor: colors.danger,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  stampText: { ...typography.h3, color: colors.danger, letterSpacing: 1 },
+  qrId: { ...typography.bodyBold, marginTop: spacing.md, letterSpacing: 1.5 },
   termsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

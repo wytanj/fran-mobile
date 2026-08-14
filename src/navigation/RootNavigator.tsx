@@ -136,16 +136,17 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Club"
-        component={HomeScreen}
+        component={MemberIdScreen}
         listeners={({ navigation }) => ({
           tabPress: (e) => {
+            if (isAuthed) return;
             e.preventDefault();
-            navigation.getParent()?.navigate(isAuthed ? 'MemberId' : 'Onboarding');
+            navigation.getParent()?.navigate('Onboarding');
           },
         })}
         options={{
           tabBarLabel: () => null,
-          tabBarAccessibilityLabel: 'Member ID',
+          tabBarAccessibilityLabel: 'Scan and earn',
           tabBarItemStyle: [styles.tabItem, styles.centerTabItem],
           tabBarIcon: () => (
             <View style={styles.centerTab}>
@@ -166,16 +167,10 @@ function MainTabs() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            if (isAuthed) return;
-            e.preventDefault();
-            navigation.getParent()?.navigate('Onboarding');
-          },
-        })}
         options={{
+          tabBarLabel: 'You',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="person" color={color} focused={focused} />
+            <TabIcon name="flame" color={color} focused={focused} />
           ),
         }}
       />

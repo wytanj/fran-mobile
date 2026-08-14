@@ -1,54 +1,62 @@
-# Handoff — 15 Aug 2026 (updated)
+# Handoff — 15 Aug 2026
 
-Read this first. **Figma SoT is the Ready page, not Ready for Dev.**
+**Figma SoT is now `fran-app (aug26) - wip`, not the LISE file.**
 
-Do **not** rematch Figma hex/Manrope. Do **not** deploy unless asked.
+https://www.figma.com/design/lUTIEfH8vnd6rPLr1IogYx/fran-app--aug26---wip-?node-id=0-1&m=dev
 
-## Figma source of truth (locked)
+- fileKey `lUTIEfH8vnd6rPLr1IogYx`
+- start node `0:1` (document page)
+- Work only from this file’s **Ready** frames. Ignore LISE `mwit2fthu3gfcXh2okg3G1` and Ready for Dev `203:1708`.
 
-**Page: Ready** — https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=565-7073
+Colours/fonts stay `src/theme` (Fran yellow `#FFE14D`, cream, brown, Platform + Symbol). Do not rematch Figma hex/Manrope. Do not deploy unless asked.
 
-- fileKey `mwit2fthu3gfcXh2okg3G1`
-- node `565:7073` (canvas name **Ready**)
-- Key frames: guest home `573:7572`, login `573:7301`, recs home `565:7074`, analysis sheet `573:6654`
+## Blocker (must fix before more design-to-code)
 
-**Do not implement from** Ready for Dev `203:1708` (yellow barcode header, Beauty Club, Besties stories). That was an earlier pass and is superseded.
+Two independent blockers. **Both** must clear — connecting the MCP still hits the seat error, and upgrading the seat is untestable while the MCP is unreachable.
 
-Colours/fonts stay `src/theme` (Fran yellow `#FFE14D`, cream, brown, Platform + Symbol).
+### 1. Figma MCP is not connected to Claude Code
 
-Use Figma MCP `get_design_context` on Ready nodes + skill `figma-design-to-code`.
+Checked 14 Aug 2026. The `figma` plugin is enabled for **Cursor only** (`.cursor/settings.json`); Claude Code has no Figma server registered (global `mcpServers` is empty, no `.mcp.json`). The local Dev Mode endpoint (`127.0.0.1:3845`) is also down because Figma desktop isn't running, and `www.figma.com/design/...` over plain HTTP returns only the SPA shell. So from Claude Code there is currently *no* path to this file.
+
+To fix, either launch Figma desktop with Dev Mode MCP enabled (serves `127.0.0.1:3845`), or register the remote server and authorize it in an **interactive** session (`claude mcp add --transport http figma https://mcp.figma.com/mcp`, then `/mcp` to run OAuth). OAuth cannot be completed from a non-interactive run.
+
+### 2. Seat is View-only (unresolved from the previous session)
+
+Figma MCP is logged in as **Jeremy** (`jeremy@heyfran.com`) with a **View** seat. Every tool on this file fails:
+
+> Looks like you don't have edit access to this file. The file owner can share it with you and make you an editor.
+
+Share the file with `jeremy@heyfran.com` as **can edit** (Dev/Full seat). Then: `get_metadata` on `0:1`, find Ready, `get_design_context` + `figma-design-to-code`, refactor Home/header/nav/login.
 
 ## Project
 
 - Expo **56** / RN **0.85**. Package `com.fran.mobile`.
 - Web: https://fran-mobile.vercel.app
-- Plan file `docs/ready-for-dev-alignment.md` is **historical** — Ready page wins if they conflict.
-- `AGENTS.md` Expo v57 docs vs installed 56: prefer 56.
+- `docs/ready-for-dev-alignment.md` is historical.
 - `faqs.csv` untracked — leave it.
 
-## Shipped on Ready (this session)
+## Fran-app Page 1 (current)
 
-- Guest-first: Main tabs open without login. **Log in** in header → Onboarding stack.
-- Ready header: logo left, Log in or tier·pts chip, search, bell (not yellow barcode bar).
-- Home = FIND YOUR SKIN TYPE teal CTA, trending chips + products, this week’s drop, promo pair.
-- Logged-in Home adds greeting + skin profile block when a skin quiz exists.
-- Center tab is **QR** (Ready), not the Ready-for-Dev smile. Profile / QR require auth.
+Working from **Member ID** (`1:4296` Scan & earn) and **You** (`1:4354` / guest `1:4635`). WIP strip left alone.
 
-## Still open on Ready
+## What’s in the app today (older LISE Ready draft still on Home)
 
-- Login chrome `573:7301` (colour-season card) — still old Welcome/Phone stack.
-- Analysis sheet `573:6654` (OILY SKIN overlay) — quiz still uses old results table.
-- Tab labels in Figma are still “You” placeholders — we kept Home / GRWM / Catalog / Profile.
-- Add-to-bag no-op. Notifications screen is a stub.
-- Android internal APK (`eas.json` not added yet).
+- Guest-first tabs, cream header (Log in / pts, search, bell)
+- Home: skin-type CTA, trending, drop, promos
+- GRWM / Catalog / PDP / Wishlist still present
+- Center QR; Profile/QR gated on auth
 
-## Next (pick one)
+Treat that as a draft to replace from the new file, not as SoT.
 
-1. Ready login + analysis sheet (`573:7301`, `573:6654`)
-2. Android internal APK: `eas build --platform android --profile internal`
+## Next
+
+1. Unlock Figma edit access
+2. Inventory Ready frames in `lUTIEfH8vnd6rPLr1IogYx`
+3. Refactor UI to those frames
+4. Android internal APK after that (no `eas.json` yet)
 
 ## Start prompt
 
 ```
-Continue from TODO.md. Figma SoT is Ready 565:7073 (not Ready for Dev). Keep Fran tokens. Next: <login/analysis or Android APK>.
+Continue from TODO.md. Figma SoT is fran-app aug26 lUTIEfH8vnd6rPLr1IogYx (node 0:1). Keep Fran tokens. Pull Ready via MCP and refactor. Do not use the LISE file.
 ```
