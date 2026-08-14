@@ -16,7 +16,7 @@ import type { CatalogCategory, MainTabParamList, RootStackParamList } from '../.
 import { colors, radius, shadow, spacing, typography } from '../../theme';
 
 type HomeNav = CompositeNavigationProp<
-  BottomTabNavigationProp<MainTabParamList, 'Home'>,
+  BottomTabNavigationProp<MainTabParamList, 'Discover'>,
   NativeStackNavigationProp<RootStackParamList>
 >;
 

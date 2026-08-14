@@ -184,11 +184,11 @@ export interface QuizQuestion {
 }
 
 export type MainTabParamList = {
-  Home: undefined;
+  Discover: undefined;
+  You: undefined;
+  Scan: undefined;
   Rewards: undefined;
-  Club: undefined;
-  Catalog: undefined;
-  Profile: undefined;
+  Account: undefined;
 };
 
 export type RootStackParamList = {
@@ -216,7 +216,8 @@ export type RootStackParamList = {
   BirthdayModal: undefined;
   MemberId: undefined;
   Vouchers: undefined;
-  Discover: undefined;
+  Catalog: undefined;
+  CheckIn: undefined;
   Wishlist: undefined;
   Pdp: { productId: string };
   Notifications: undefined;

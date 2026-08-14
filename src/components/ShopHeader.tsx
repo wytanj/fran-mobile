@@ -49,7 +49,7 @@ export function ShopHeader() {
           </Pressable>
         )}
         <Pressable
-          onPress={() => navigation.navigate('Main', { screen: 'Catalog' })}
+          onPress={() => navigation.navigate('Catalog')}
           accessibilityRole="button"
           accessibilityLabel="Search catalog"
           hitSlop={8}

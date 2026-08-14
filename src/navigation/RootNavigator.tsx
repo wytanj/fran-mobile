@@ -1,11 +1,13 @@
-import { FranIcon, type FranIconName } from '../components/FranIcon';
+import { TabGlyph, type TabGlyphName } from '../components/TabGlyph';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { resolveFontFamily, useTypography } from '../context/TypographyContext';
 import { useUser } from '../context/UserContext';
+import { AccountScreen } from '../screens/account/AccountScreen';
 import { FaqScreen } from '../screens/account/FaqScreen';
 import { NotificationsScreen } from '../screens/account/NotificationsScreen';
 import { FeedbackScreen } from '../screens/account/FeedbackScreen';
@@ -40,7 +42,7 @@ import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { QuizScreen } from '../screens/profile/QuizScreen';
 import { VoucherDetailScreen } from '../screens/vouchers/VoucherDetailScreen';
 import { VouchersScreen } from '../screens/vouchers/VouchersScreen';
-import { colors, fonts, radius } from '../theme';
+import { colors, fonts, shadow } from '../theme';
 import type {
   MainTabParamList,
   OnboardingStackParamList,
@@ -77,22 +79,13 @@ function OnboardingNavigator() {
 }
 
 /**
- * Icon in a soft yellow capsule when active. The Fran set has one glyph per
- * concept — no outline/filled pair — so selection reads from the capsule and
- * colour rather than a second drawing.
+ * Figma footer: Discover · You · Scan · Rewards · Account.
+ * Glyphs are the exported Figma assets; the bar is a floating cream pill.
  */
-function TabIcon({
-  name,
-  color,
-  focused,
-}: {
-  name: FranIconName;
-  color: string;
-  focused: boolean;
-}) {
+function TabIcon({ name, color }: { name: TabGlyphName; color: string }) {
   return (
-    <View style={[styles.tabIcon, focused && styles.tabIconOn]}>
-      <FranIcon name={name} size={21} color={color} />
+    <View style={styles.tabIcon}>
+      <TabGlyph name={name} size={24} color={color} />
     </View>
   );
 }
@@ -100,42 +93,42 @@ function TabIcon({
 function MainTabs() {
   const { variant } = useTypography();
   const { isAuthed } = useUser();
+  const insets = useSafeAreaInsets();
+  const lift = Math.max(insets.bottom, 10);
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.brown,
-        tabBarInactiveTintColor: colors.tabInactive,
-        tabBarStyle: styles.tabBar,
+        tabBarInactiveTintColor: colors.brown,
+        tabBarStyle: [styles.tabBar, { marginBottom: lift }],
         tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: StyleSheet.flatten([
           styles.tabLabel,
           { fontFamily: resolveFontFamily(variant, fonts.bodySemi) },
         ]),
         tabBarLabelPosition: 'below-icon',
+        tabBarHideOnKeyboard: true,
+        sceneStyle: { backgroundColor: colors.background },
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="Discover"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="store" color={color} focused={focused} />
-          ),
+          tabBarIcon: ({ color }) => <TabIcon name="discover" color={color} />,
         }}
       />
       <Tab.Screen
-        name="Rewards"
-        component={RewardsScreen}
+        name="You"
+        component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="gem" color={color} focused={focused} />
-          ),
+          tabBarIcon: ({ color }) => <TabIcon name="you" color={color} />,
         }}
       />
       <Tab.Screen
-        name="Club"
+        name="Scan"
         component={MemberIdScreen}
         listeners={({ navigation }) => ({
           tabPress: (e) => {
@@ -150,28 +143,23 @@ function MainTabs() {
           tabBarItemStyle: [styles.tabItem, styles.centerTabItem],
           tabBarIcon: () => (
             <View style={styles.centerTab}>
-              <FranIcon name="qr" size={23} color={colors.brown} />
+              <TabGlyph name="scan" size={24} color={colors.brown} />
             </View>
           ),
         }}
       />
       <Tab.Screen
-        name="Catalog"
-        component={CatalogScreen}
+        name="Rewards"
+        component={RewardsScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="book" color={color} focused={focused} />
-          ),
+          tabBarIcon: ({ color }) => <TabIcon name="rewards" color={color} />,
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Account"
+        component={AccountScreen}
         options={{
-          tabBarLabel: 'You',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="flame" color={color} focused={focused} />
-          ),
+          tabBarIcon: ({ color }) => <TabIcon name="account" color={color} />,
         }}
       />
     </Tab.Navigator>
@@ -197,7 +185,8 @@ export function RootNavigator() {
         <RootStack.Screen name="Grwm" component={GrwmScreen} />
         <RootStack.Screen name="MemberId" component={MemberIdScreen} />
         <RootStack.Screen name="Vouchers" component={VouchersScreen} />
-        <RootStack.Screen name="Discover" component={DiscoverScreen} />
+        <RootStack.Screen name="Catalog" component={CatalogScreen} />
+        <RootStack.Screen name="CheckIn" component={DiscoverScreen} />
         <RootStack.Screen name="Wishlist" component={WishlistScreen} />
         <RootStack.Screen name="Pdp" component={PdpScreen} />
         <RootStack.Screen name="Notifications" component={NotificationsScreen} />
@@ -239,46 +228,40 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cream,
   },
   tabBar: {
-    height: 72,
-    paddingTop: 6,
-    paddingBottom: 8,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderSoft,
+    height: 64,
+    marginHorizontal: 14,
+    paddingTop: 4,
+    paddingBottom: 6,
+    borderTopWidth: 0,
+    borderRadius: 12,
     backgroundColor: colors.surface,
-    elevation: 0,
+    ...shadow.md,
   },
   tabItem: {
     paddingTop: 0,
   },
   centerTabItem: {
-    // A narrower centre slot pulls the adjacent Profile and Vouchers tabs in.
     flex: 0.72,
   },
   tabLabel: {
     fontFamily: fonts.bodySemi,
-    fontSize: 10,
-    letterSpacing: 0.2,
-    marginTop: 3,
+    fontSize: 12,
+    letterSpacing: 0.12,
+    marginTop: 2,
   },
   tabIcon: {
-    width: 46,
-    height: 28,
-    borderRadius: radius.full,
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabIconOn: {
-    backgroundColor: colors.yellowSoft,
-  },
   centerTab: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
     transform: [{ translateY: 6 }],
-    borderWidth: 3,
-    borderColor: colors.brown,
   },
 });

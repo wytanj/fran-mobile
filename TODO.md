@@ -15,7 +15,7 @@ Colours/fonts stay `src/theme` (Fran yellow `#FFE14D`, cream, brown, Platform + 
 
 ## Tabs now
 
-Home · Rewards · Scan (Club) · Catalog · You
+Discover · You · Scan · Rewards · Account — matches fran-app footer (`45:1246`).
 
 GRWM is still reachable from Home → See more (stack).
 

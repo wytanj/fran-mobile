@@ -3,7 +3,7 @@ import { type FranIconName } from '../../components/FranIcon';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Divider, ListRow, Screen } from '../../components/ui';
 import { useUser } from '../../context/UserContext';
 import { useLayout } from '../../layout/useLayout';
@@ -59,7 +59,7 @@ const MENU: {
 
 export function AccountScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { user, signOut } = useUser();
+  const { isAuthed, user, signOut } = useUser();
   const { gutter } = useLayout();
 
   return (
@@ -69,6 +69,24 @@ export function AccountScreen() {
           <Text style={styles.eyebrow}>Settings</Text>
           <Text style={styles.title}>Account</Text>
 
+          {!isAuthed ? (
+            <Pressable
+              onPress={() => navigation.navigate('Onboarding')}
+              style={[styles.hero, shadow.sm]}
+              accessibilityRole="button"
+            >
+              <View style={styles.avatarRing}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>?</Text>
+                </View>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name}>Log in to Fran</Text>
+                <Text style={styles.meta}>Points, orders and your member ID live here.</Text>
+              </View>
+            </Pressable>
+          ) : (
+            <>
           <View style={[styles.hero, shadow.sm]}>
             <View style={styles.avatarRing}>
               <View style={styles.avatar}>
@@ -121,6 +139,8 @@ export function AccountScreen() {
               }
             />
           </View>
+            </>
+          )}
 
           <Text style={styles.version}>Fran · v1.0.0 prototype</Text>
         </View>

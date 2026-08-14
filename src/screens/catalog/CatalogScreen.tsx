@@ -28,6 +28,17 @@ export function CatalogScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ paddingHorizontal: gutter, paddingTop: spacing.xl }}>
+          {navigation.canGoBack() ? (
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={styles.back}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+            >
+              <FranIcon name="chevronLeft" size={20} color={colors.brown} />
+              <Text style={styles.backText}>Back</Text>
+            </Pressable>
+          ) : null}
           <Text style={styles.h}>Catalog</Text>
           <ScrollView
             horizontal
@@ -90,6 +101,8 @@ export function CatalogScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: spacing.sm },
+  backText: { ...typography.captionBold, color: colors.brown },
   h: { ...typography.h1, marginBottom: spacing.md },
   chips: { gap: spacing.sm, paddingBottom: spacing.lg },
   chip: {
