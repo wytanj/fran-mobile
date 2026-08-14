@@ -1,63 +1,54 @@
-# Handoff — 15 Aug 2026
+# Handoff — 15 Aug 2026 (updated)
 
-Read this first in a new session. Do **not** rematch Figma hex/Manrope. Do **not** deploy unless asked. Next real work is the **Android internal APK** (POS, not Play Store).
+Read this first. **Figma SoT is the Ready page, not Ready for Dev.**
+
+Do **not** rematch Figma hex/Manrope. Do **not** deploy unless asked.
+
+## Figma source of truth (locked)
+
+**Page: Ready** — https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=565-7073
+
+- fileKey `mwit2fthu3gfcXh2okg3G1`
+- node `565:7073` (canvas name **Ready**)
+- Key frames: guest home `573:7572`, login `573:7301`, recs home `565:7074`, analysis sheet `573:6654`
+
+**Do not implement from** Ready for Dev `203:1708` (yellow barcode header, Beauty Club, Besties stories). That was an earlier pass and is superseded.
+
+Colours/fonts stay `src/theme` (Fran yellow `#FFE14D`, cream, brown, Platform + Symbol).
+
+Use Figma MCP `get_design_context` on Ready nodes + skill `figma-design-to-code`.
 
 ## Project
 
-- Repo: `fran-mobile` — Expo **56** / RN **0.85** / React 19.2 loyalty + shop prototype.
-- Brand in code: **Fran**. Figma file is **LISE App (WIP)**.
-- Package: `com.fran.mobile` (`app.json`). Keep it stable.
-- Web prod: https://fran-mobile.vercel.app
-- Tip of `master`: `89a17da` (Ready-for-Dev flow). Plan doc: `docs/ready-for-dev-alignment.md`.
-- Workspace rule `AGENTS.md` points at Expo **v57** docs; the **installed SDK is 56**. Prefer 56 behaviour when they conflict.
-- `faqs.csv` is untracked and unrelated — leave it.
+- Expo **56** / RN **0.85**. Package `com.fran.mobile`.
+- Web: https://fran-mobile.vercel.app
+- Plan file `docs/ready-for-dev-alignment.md` is **historical** — Ready page wins if they conflict.
+- `AGENTS.md` Expo v57 docs vs installed 56: prefer 56.
+- `faqs.csv` untracked — leave it.
 
-## Locked decisions
+## Shipped on Ready (this session)
 
-1. **Colours + fonts:** current `src/theme` (`#FFE14D`, `#FFFEF5`, `#3A2415`, Platform + Symbol). Paint Figma *layout* with these.
-2. **Flow SoT:** Figma [Ready for Dev](https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=203-1708) (`203:1708`) + Working Screens (`128:858`).
-3. **Not this pass:** later Ready canvas `565:7073` (guest skin-analysis home, colour-season login).
-4. **Android POS:** internal **APK**, sideload / MDM. No Play Store, no AAB.
+- Guest-first: Main tabs open without login. **Log in** in header → Onboarding stack.
+- Ready header: logo left, Log in or tier·pts chip, search, bell (not yellow barcode bar).
+- Home = FIND YOUR SKIN TYPE teal CTA, trending chips + products, this week’s drop, promo pair.
+- Logged-in Home adds greeting + skin profile block when a skin quiz exists.
+- Center tab is **QR** (Ready), not the Ready-for-Dev smile. Profile / QR require auth.
 
-## Shipped (do not redo)
+## Still open on Ready
 
-Tabs: **Home / GRWM / smile / Catalog / Profile**. Flat tab bar. Yellow shop header (barcode → Member ID, heart → wishlist).
+- Login chrome `573:7301` (colour-season card) — still old Welcome/Phone stack.
+- Analysis sheet `573:6654` (OILY SKIN overlay) — quiz still uses old results table.
+- Tab labels in Figma are still “You” placeholders — we kept Home / GRWM / Catalog / Profile.
+- Add-to-bag no-op. Notifications screen is a stub.
+- Android internal APK (`eas.json` not added yet).
 
-New: `HomeScreen`, `GrwmScreen`, `CatalogScreen`, `PdpScreen`, `WishlistScreen`, `ShopHeader`, `ProductCard`, `src/data/catalog.ts`, Figma photos in `assets/catalog/`.
+## Next (pick one)
 
-Loyalty kept as stack from Profile (Discover check-in, Vouchers, account, log out). Member ID is a stack screen. Type dock is `__DEV__` only.
+1. Ready login + analysis sheet (`573:7301`, `573:6654`)
+2. Android internal APK: `eas build --platform android --profile internal`
 
-Figma MCP is configured as `figma` → `https://mcp.figma.com/mcp` (OAuth in `~/.grok/mcp_credentials.json`). Use `figma-design-to-code` before `get_design_context`. fileKey `mwit2fthu3gfcXh2okg3G1`.
-
-## Do next — Android internal APK
-
-No `eas.json` yet. No `expo-dev-client`. Cloud EAS does **not** need Studio/JDK. Local `expo run:android` does.
-
-**Machine (Windows, local builds only)**
-- JDK **17** (Microsoft OpenJDK 17). Not 8/11/21.
-- Latest Android Studio + **SDK Platform 36** (compile). App still runs Android 7+.
-- `JAVA_HOME`, `ANDROID_HOME` = `%LOCALAPPDATA%\Android\Sdk`, `platform-tools` on Path.
-
-**Steps**
-1. `npm i -g eas-cli` → `eas login` → `eas build:configure`
-2. Add profile `internal`: `"distribution": "internal"`, `android.buildType: "apk"`
-3. `eas build --platform android --profile internal`
-4. Keep the generated keystore. Same package + keystore = in-place updates on tills.
-5. Install: EAS URL / QR (allow unknown apps) or `adb install app.apk`
-6. Bump `expo.version` per store drop
-
-Optional later: `expo-dev-client` + `npx expo run:android` for USB debug.
-
-## Figma leftovers (after APK, if asked)
-
-Catalog filter polish (`102:1984`). Bundle PDP. Real QR. Notifications / help / language. Guest analysis home (`565:7073`). Add-to-bag is a no-op.
-
-## Open product question
-
-Center tab is a yellow **smile** that opens Member ID (same as header barcode). Confirm if that stays.
-
-## How to start tomorrow
+## Start prompt
 
 ```
-Continue from TODO.md. Next: add eas.json internal APK profile and run eas build --platform android --profile internal. Do not rematch Figma tokens. Do not deploy web unless asked.
+Continue from TODO.md. Figma SoT is Ready 565:7073 (not Ready for Dev). Keep Fran tokens. Next: <login/analysis or Android APK>.
 ```

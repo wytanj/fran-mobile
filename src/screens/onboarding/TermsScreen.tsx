@@ -1,5 +1,6 @@
 import { Text } from '../../components/ThemedText';
 import { FranIcon } from '../../components/FranIcon';
+import { CommonActions } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -32,6 +33,9 @@ export function TermsScreen({ navigation }: Props) {
         points: signupDraft.birthday ? 10 : 0,
         earnActionsCompleted: signupDraft.birthday ? { birthday: true } : {},
       });
+      navigation.getParent()?.dispatch(
+        CommonActions.reset({ index: 0, routes: [{ name: 'Main' }] }),
+      );
     } finally {
       setLoading(false);
     }

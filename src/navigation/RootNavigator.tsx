@@ -7,6 +7,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { resolveFontFamily, useTypography } from '../context/TypographyContext';
 import { useUser } from '../context/UserContext';
 import { FaqScreen } from '../screens/account/FaqScreen';
+import { NotificationsScreen } from '../screens/account/NotificationsScreen';
 import { FeedbackScreen } from '../screens/account/FeedbackScreen';
 import { MyDetailsScreen } from '../screens/account/MyDetailsScreen';
 import { OrderDetailScreen } from '../screens/account/OrderDetailScreen';
@@ -97,6 +98,7 @@ function TabIcon({
 
 function MainTabs() {
   const { variant } = useTypography();
+  const { isAuthed } = useUser();
 
   return (
     <Tab.Navigator
@@ -104,7 +106,6 @@ function MainTabs() {
         headerShown: false,
         tabBarActiveTintColor: colors.brown,
         tabBarInactiveTintColor: colors.tabInactive,
-        // Float the navigation surface slightly inside the screen edges.
         tabBarStyle: styles.tabBar,
         tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: StyleSheet.flatten([
@@ -139,7 +140,7 @@ function MainTabs() {
         listeners={({ navigation }) => ({
           tabPress: (e) => {
             e.preventDefault();
-            navigation.getParent()?.navigate('MemberId');
+            navigation.getParent()?.navigate(isAuthed ? 'MemberId' : 'Onboarding');
           },
         })}
         options={{
@@ -148,7 +149,7 @@ function MainTabs() {
           tabBarItemStyle: [styles.tabItem, styles.centerTabItem],
           tabBarIcon: () => (
             <View style={styles.centerTab}>
-              <FranIcon name="faceSmile" size={23} color={colors.brown} />
+              <FranIcon name="qr" size={23} color={colors.brown} />
             </View>
           ),
         }}
@@ -165,6 +166,13 @@ function MainTabs() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            if (isAuthed) return;
+            e.preventDefault();
+            navigation.getParent()?.navigate('Onboarding');
+          },
+        })}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name="person" color={color} focused={focused} />
@@ -176,7 +184,7 @@ function MainTabs() {
 }
 
 export function RootNavigator() {
-  const { isAuthed, isReady } = useUser();
+  const { isReady } = useUser();
 
   if (!isReady) {
     return (
@@ -189,43 +197,39 @@ export function RootNavigator() {
   return (
     <NavigationContainer theme={navTheme}>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {!isAuthed ? (
-          <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
-        ) : (
-          <>
-            <RootStack.Screen name="Main" component={MainTabs} />
-            <RootStack.Screen name="MemberId" component={MemberIdScreen} />
-            <RootStack.Screen name="Vouchers" component={VouchersScreen} />
-            <RootStack.Screen name="Discover" component={DiscoverScreen} />
-            <RootStack.Screen name="Wishlist" component={WishlistScreen} />
-            <RootStack.Screen name="Pdp" component={PdpScreen} />
-            <RootStack.Screen
-              name="PromoDetail"
-              component={PromoDetailScreen}
-              options={{ animation: 'slide_from_right' }}
-            />
-            <RootStack.Screen name="Transactions" component={TransactionsScreen} />
-            <RootStack.Screen name="ExpiringPoints" component={ExpiringPointsScreen} />
-            <RootStack.Screen name="MembershipTiers" component={MembershipTiersScreen} />
-            <RootStack.Screen name="EarnPoints" component={EarnPointsScreen} />
-            <RootStack.Screen name="BeautyProfile" component={BeautyProfileScreen} />
-            <RootStack.Screen name="Quiz" component={QuizScreen} />
-            <RootStack.Screen name="BeautyResults" component={BeautyResultsScreen} />
-            <RootStack.Screen name="VoucherDetail" component={VoucherDetailScreen} />
-            <RootStack.Screen name="MyDetails" component={MyDetailsScreen} />
-            <RootStack.Screen name="PurchaseHistory" component={PurchaseHistoryScreen} />
-            <RootStack.Screen name="OrderDetail" component={OrderDetailScreen} />
-            <RootStack.Screen name="Privacy" component={PrivacyScreen} />
-            <RootStack.Screen name="StoreLocator" component={StoreLocatorScreen} />
-            <RootStack.Screen name="Faq" component={FaqScreen} />
-            <RootStack.Screen name="Feedback" component={FeedbackScreen} />
-            <RootStack.Screen
-              name="BirthdayModal"
-              component={BirthdayModalScreen}
-              options={{ presentation: 'modal' }}
-            />
-          </>
-        )}
+        <RootStack.Screen name="Main" component={MainTabs} />
+        <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
+        <RootStack.Screen name="MemberId" component={MemberIdScreen} />
+        <RootStack.Screen name="Vouchers" component={VouchersScreen} />
+        <RootStack.Screen name="Discover" component={DiscoverScreen} />
+        <RootStack.Screen name="Wishlist" component={WishlistScreen} />
+        <RootStack.Screen name="Pdp" component={PdpScreen} />
+        <RootStack.Screen name="Notifications" component={NotificationsScreen} />
+        <RootStack.Screen
+          name="PromoDetail"
+          component={PromoDetailScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <RootStack.Screen name="Transactions" component={TransactionsScreen} />
+        <RootStack.Screen name="ExpiringPoints" component={ExpiringPointsScreen} />
+        <RootStack.Screen name="MembershipTiers" component={MembershipTiersScreen} />
+        <RootStack.Screen name="EarnPoints" component={EarnPointsScreen} />
+        <RootStack.Screen name="BeautyProfile" component={BeautyProfileScreen} />
+        <RootStack.Screen name="Quiz" component={QuizScreen} />
+        <RootStack.Screen name="BeautyResults" component={BeautyResultsScreen} />
+        <RootStack.Screen name="VoucherDetail" component={VoucherDetailScreen} />
+        <RootStack.Screen name="MyDetails" component={MyDetailsScreen} />
+        <RootStack.Screen name="PurchaseHistory" component={PurchaseHistoryScreen} />
+        <RootStack.Screen name="OrderDetail" component={OrderDetailScreen} />
+        <RootStack.Screen name="Privacy" component={PrivacyScreen} />
+        <RootStack.Screen name="StoreLocator" component={StoreLocatorScreen} />
+        <RootStack.Screen name="Faq" component={FaqScreen} />
+        <RootStack.Screen name="Feedback" component={FeedbackScreen} />
+        <RootStack.Screen
+          name="BirthdayModal"
+          component={BirthdayModalScreen}
+          options={{ presentation: 'modal' }}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );

@@ -183,9 +183,17 @@ export interface QuizQuestion {
   options: { id: string; label: string; hint?: string }[];
 }
 
+export type MainTabParamList = {
+  Home: undefined;
+  Grwm: undefined;
+  Club: undefined;
+  Catalog: undefined;
+  Profile: undefined;
+};
+
 export type RootStackParamList = {
   Onboarding: undefined;
-  Main: undefined;
+  Main: import('@react-navigation/native').NavigatorScreenParams<MainTabParamList> | undefined;
   PromoDetail: { promoId: string };
   Transactions: undefined;
   ExpiringPoints: undefined;
@@ -208,6 +216,7 @@ export type RootStackParamList = {
   Discover: undefined;
   Wishlist: undefined;
   Pdp: { productId: string };
+  Notifications: undefined;
 };
 
 export type OnboardingStackParamList = {
@@ -223,12 +232,4 @@ export type OnboardingStackParamList = {
   Name: undefined;
   OptionalDetails: undefined;
   Terms: undefined;
-};
-
-export type MainTabParamList = {
-  Home: undefined;
-  Grwm: undefined;
-  Club: undefined;
-  Catalog: undefined;
-  Profile: undefined;
 };

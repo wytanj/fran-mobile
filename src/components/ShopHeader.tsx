@@ -6,81 +6,105 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUser } from '../context/UserContext';
+import { clubTiers } from '../data/catalog';
 import { useLayout } from '../layout/useLayout';
 import type { RootStackParamList } from '../types';
 import { colors, radius, spacing, typography } from '../theme';
 import { FranLogo } from './FranLogo';
 
+/** Ready canvas header: logo left, login or points, search + bell. */
 export function ShopHeader() {
   const insets = useSafeAreaInsets();
   const { gutter } = useLayout();
-  const { wishlist } = useUser();
+  const { isAuthed, user } = useUser();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const count = wishlist.length;
+  const club = clubTiers.find((t) => t.tier === user.tier) ?? clubTiers[0];
+
+  const goAuth = () => navigation.navigate('Onboarding');
 
   return (
     <View style={[styles.bar, { paddingTop: insets.top + 8, paddingHorizontal: gutter }]}>
-      <Pressable
-        onPress={() => navigation.navigate('MemberId')}
-        accessibilityRole="button"
-        accessibilityLabel="Member ID"
-        hitSlop={8}
-        style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
-      >
-        <FranIcon name="qr" size={22} color={colors.brown} />
-      </Pressable>
-      <FranLogo height={22} variant="brown" />
-      <Pressable
-        onPress={() => navigation.navigate('Wishlist')}
-        accessibilityRole="button"
-        accessibilityLabel={`Wishlist, ${count} saved`}
-        hitSlop={8}
-        style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
-      >
-        <FranIcon name="heart" size={20} color={colors.brown} />
-        {count > 0 ? (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{count > 99 ? '99+' : String(count)}</Text>
-          </View>
-        ) : null}
-      </Pressable>
+      <FranLogo height={20} variant="brown" />
+      <View style={styles.actions}>
+        {isAuthed ? (
+          <Pressable
+            onPress={() => navigation.navigate('Transactions')}
+            accessibilityRole="button"
+            accessibilityLabel={`${user.points} points`}
+            style={({ pressed }) => [styles.pointsChip, pressed && styles.pressed]}
+          >
+            <Text style={styles.pointsText} numberOfLines={1}>
+              {club.name} · {user.points.toLocaleString()} pts
+            </Text>
+            <FranIcon name="chevronRight" size={12} color={colors.brown} />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={goAuth}
+            accessibilityRole="button"
+            accessibilityLabel="Log in"
+            style={({ pressed }) => [styles.login, pressed && styles.pressed]}
+          >
+            <Text style={styles.loginText}>Log in</Text>
+          </Pressable>
+        )}
+        <Pressable
+          onPress={() => navigation.navigate('Main', { screen: 'Catalog' })}
+          accessibilityRole="button"
+          accessibilityLabel="Search catalog"
+          hitSlop={8}
+          style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
+        >
+          <FranIcon name="search" size={22} color={colors.brown} />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Notifications')}
+          accessibilityRole="button"
+          accessibilityLabel="Notifications"
+          hitSlop={8}
+          style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
+        >
+          <FranIcon name="alert" size={20} color={colors.brown} />
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: colors.yellow,
+    backgroundColor: colors.background,
     paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: spacing.sm,
   },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  login: {
+    backgroundColor: colors.yellow,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: radius.full,
+  },
+  loginText: { ...typography.captionBold, color: colors.brown },
+  pointsChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    backgroundColor: colors.yellowSoft,
+    borderRadius: radius.full,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    maxWidth: 180,
+  },
+  pointsText: { ...typography.micro, color: colors.brown },
   iconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pressed: { opacity: 0.65 },
-  badge: {
-    position: 'absolute',
-    top: 4,
-    right: 2,
-    minWidth: 16,
-    height: 16,
-    borderRadius: radius.full,
-    backgroundColor: colors.brown,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 3,
-  },
-  badgeText: {
-    ...typography.micro,
-    color: colors.white,
-    fontSize: 8,
-    lineHeight: 10,
-    letterSpacing: 0,
-  },
 });

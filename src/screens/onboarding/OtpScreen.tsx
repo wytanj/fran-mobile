@@ -1,5 +1,6 @@
 import { Text, TextInput } from '../../components/ThemedText';
 import { FranIcon } from '../../components/FranIcon';
+import { CommonActions } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -75,6 +76,9 @@ export function OtpScreen({ navigation, route }: Props) {
   const completeAuth = async () => {
     if (mode === 'login') {
       await signIn(phoneE164);
+      navigation.getParent()?.dispatch(
+        CommonActions.reset({ index: 0, routes: [{ name: 'Main' }] }),
+      );
     } else {
       signupDraft.phone = phoneE164;
       navigation.navigate('Name');

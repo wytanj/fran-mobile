@@ -2,7 +2,9 @@
 
 **Figma:** [LISE App (WIP)](https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=203-1708&m=dev)
 
-**Flow source of truth:** section **Ready for Dev** (`203:1708`) plus sibling **Working Screens** (`128:858`)
+**Flow source of truth (superseded 15 Aug 2026):** use Figma page **Ready** (`565:7073`) from now on — https://www.figma.com/design/mwit2fthu3gfcXh2okg3G1/LISE-App--WIP-?node-id=565-7073
+
+This file described the older **Ready for Dev** (`203:1708`) pass. Do not implement new work from that section.
 
 **Visual source of truth:** **this repo's present theme** — do not rematch Figma hex or typefaces
 
