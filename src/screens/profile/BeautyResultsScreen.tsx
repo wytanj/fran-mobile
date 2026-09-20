@@ -22,14 +22,16 @@ export function BeautyResultsScreen({ navigation, route }: Props) {
   return (
     <Screen edges={['top']}>
       <Header
-        title={categoryLabels[category]}
+        title={`Your ${categoryLabels[category].toLowerCase()} results`}
         onBack={() => navigation.goBack()}
       />
       <ScrollView
         contentContainerStyle={{ paddingBottom: spacing.huge }}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.eyebrow}>Your result</Text>
+        <Text style={styles.eyebrow}>
+          Awesome! You have completed the {categoryLabels[category].toLowerCase()} quiz.
+        </Text>
         <Text style={styles.title}>{copy.title}</Text>
         <View style={[styles.card, shadow.sm]}>
           {copy.rows.map((r, i) => (
