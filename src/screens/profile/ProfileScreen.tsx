@@ -13,7 +13,7 @@ import { useLayout } from '../../layout/useLayout';
 import type { BeautyCategory, RootStackParamList } from '../../types';
 import { colors, radius, spacing, typography } from '../../theme';
 
-const QUIZ_PTS = 25;
+const QUIZ_PTS = 15;
 
 const CARDS: {
   category: BeautyCategory;

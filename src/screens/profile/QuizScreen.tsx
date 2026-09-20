@@ -11,6 +11,9 @@ import { colors, radius, spacing, typography } from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Quiz'>;
 
+/** Align with earnActions beauty pts + Figma quiz frames (1:3786+). */
+const QUIZ_PTS = 15;
+
 export function QuizScreen({ navigation, route }: Props) {
   const { category } = route.params;
   const questions = quizQuestions[category];
@@ -91,6 +94,9 @@ export function QuizScreen({ navigation, route }: Props) {
           <Text style={styles.step}>Pick up to {q.maxSelect}</Text>
         ) : null}
       </View>
+      <Text style={styles.earnHint}>
+        You will earn +{QUIZ_PTS} points upon completion
+      </Text>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: spacing.xl }}
@@ -172,6 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   step: { ...typography.eyebrow },
+  earnHint: { ...typography.micro, color: colors.inkSoft, marginBottom: spacing.lg },
   question: { ...typography.h2, marginBottom: spacing.xl, maxWidth: 460 },
   list: { gap: spacing.sm },
   option: {

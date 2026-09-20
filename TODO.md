@@ -1,36 +1,35 @@
-# Handoff — 14 Aug 2026
+# Handoff — A0 quiz + tier (feat/a0-quiz-tier-figma)
 
 **Figma SoT:** [fran-app (aug26) - wip](https://www.figma.com/design/lUTIEfH8vnd6rPLr1IogYx/fran-app--aug26---wip-?node-id=0-1&m=dev) — fileKey `lUTIEfH8vnd6rPLr1IogYx`, page `0:1`.
 
 Colours/fonts stay `src/theme` (Fran yellow `#FFE14D`, cream, brown, Platform + Symbol). Do not rematch Figma hex.
 
-## Shipped on Page 1
+## A0 in this branch (REVIEW → build)
 
-| Section | Frames | In app |
+| Section | Frames | App |
 |---|---|---|
-| Member ID | `1:4296` | Club tab — Scan & earn |
-| You | `1:4354` / guest `1:4635` | You tab |
-| Rewards main page | `45:1088` logged-in / `45:3797` guest | **Rewards tab** |
-| New user / login | `40:2910` guest, `40:3176` phone, `40:2418` OTP | Onboarding Phone + OTP |
+| Skin / Makeup / Hair / Lifestyle quizzes | `1:3786+` (skin set), makeup/hair/lifestyle siblings | `QuizScreen` + You cards — earn +15 hint, existing flow |
+| Quiz results | `1:4065` etc. | `BeautyResultsScreen` title/copy polish |
+| Membership tier detail | `45:3491` / `45:3583` / `45:3684` (Tiers) — TODO historically cited `45:3439` which is points txn sibling | `MembershipTiersScreen` off Rewards |
 
-## Tabs now
+## READY (already shipped — polish only)
+
+Login/OTP, Member ID, You core, Rewards main.
+
+## SKIP STAGED (scaffold only / not this PR)
+
+- Pre-login / empty my-details / error notification variants
+- WIP unnamed iPhone frames under WORK IN PROGRESS banner
+- // STAGED: treat as REVIEW until design graduates — do not ship empty/error shells
+
+## LATER (not this PR)
+
+Discover check-in/streak/bonus, Account FAQ/purchase, store locator/feedback/notifications, Android APK / `eas.json`.
+
+## Tabs
 
 Discover · You · Scan · Rewards · Account — matches fran-app footer (`45:1246`).
-
-GRWM is still reachable from Home → See more (stack).
-
-## Not this pass
-
-- Skin quiz frames next to You (already wired; Figma variants not restyled this turn)
-- Membership tier detail screens in the Rewards row (`45:3439` etc.)
-- Android internal APK / `eas.json`
 
 ## Leave untracked
 
 `faqs.csv`, `.cursor/`
-
-## Start prompt
-
-```
-Continue from TODO.md. Figma SoT is fran-app aug26 lUTIEfH8vnd6rPLr1IogYx. Keep Fran tokens. Next: quiz frames beside You, or tier screens off Rewards.
-```

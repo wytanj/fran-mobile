@@ -1,3 +1,4 @@
+/** STAGED empty / error my-details variants — skip until design graduates (A0). */
 import { Text } from '../../components/ThemedText';
 import { FranIcon } from '../../components/FranIcon';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

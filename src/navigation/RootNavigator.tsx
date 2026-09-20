@@ -186,6 +186,7 @@ export function RootNavigator() {
         <RootStack.Screen name="MemberId" component={MemberIdScreen} />
         <RootStack.Screen name="Vouchers" component={VouchersScreen} />
         <RootStack.Screen name="Catalog" component={CatalogScreen} />
+        {/* STAGED (skip A0): Discover check-in / streak / bonus day Figma variants — later PR */}
         <RootStack.Screen name="CheckIn" component={DiscoverScreen} />
         <RootStack.Screen name="Wishlist" component={WishlistScreen} />
         <RootStack.Screen name="Pdp" component={PdpScreen} />
