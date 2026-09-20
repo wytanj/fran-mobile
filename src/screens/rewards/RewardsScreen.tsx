@@ -19,12 +19,6 @@ type Nav = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
-const STATUS: Record<1 | 2 | 3, string> = {
-  1: 'HOOKED',
-  2: 'LOCKED IN',
-  3: 'ALL IN',
-};
-
 const EARN_COPY: Record<
   string,
   { title: string; sub: (pts: number) => string; cta: string; well: string }
@@ -203,10 +197,10 @@ export function RewardsScreen() {
             <PressableScale
               onPress={() => navigation.navigate('MembershipTiers')}
               style={styles.pointsCard}
-              accessibilityLabel={`${user.points} points, ${STATUS[user.tier]}`}
+              accessibilityLabel={`${user.points} points, ${currentTier.name}`}
             >
               <View style={styles.pointsTop}>
-                <Text style={styles.status}>Status: {STATUS[user.tier]}</Text>
+                <Text style={styles.status}>Status: {currentTier.name}</Text>
                 <FranIcon name="chevronRight" size={16} color={colors.brown} />
               </View>
               <Text style={styles.pointsValue}>

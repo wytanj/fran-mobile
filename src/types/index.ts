@@ -163,14 +163,21 @@ export interface EarnAction {
   category?: BeautyCategory;
 }
 
+export interface TierPerk {
+  title: string;
+  body: string;
+}
+
 export interface TierInfo {
   tier: MembershipTier;
+  /** Display status label — HOOKED / LOCKED IN / ALL IN (Figma Rewards tier row). */
   name: string;
   spendRequired: number;
   pointsPerDollar: number;
   pointsExpire: boolean;
   birthdayTransactions: number;
-  perks: string[];
+  perks: TierPerk[];
+  /** Accent for selected chip / checks — Fran theme token, not Figma hex. */
   color: string;
   bgColor: string;
 }

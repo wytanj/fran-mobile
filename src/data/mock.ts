@@ -10,6 +10,7 @@ import type {
   User,
   Voucher,
 } from '../types';
+import { colors } from '../theme';
 
 export const defaultUser: User = {
   id: 'u_demo',
@@ -43,51 +44,67 @@ export const defaultUser: User = {
 export const tiers: TierInfo[] = [
   {
     tier: 1,
-    name: 'Tier 1',
+    name: 'HOOKED',
     spendRequired: 0,
     pointsPerDollar: 1,
     pointsExpire: true,
     birthdayTransactions: 1,
+    // Figma Rewards tier detail (~45:3491) — layout only; Fran tokens for paint.
     perks: [
-      'Earn points — $1 = 1 point',
-      'Points expire after 12 months',
-      '2x points on birthday month (1 transaction)',
-      'Member-exclusive discounts',
+      { title: 'Earn points', body: '$1 = 1.00 points' },
+      { title: 'Points expire after 12 months', body: '' },
+      {
+        title: 'Birthday bonus points',
+        body: '2x rewards on a single transaction on your birthday month',
+      },
+      { title: 'Member exclusive perks', body: 'Promotions, events, and more' },
     ],
-    color: '#A67C52',
-    bgColor: '#F7EFE6',
+    color: colors.brown,
+    bgColor: colors.yellow,
   },
   {
     tier: 2,
-    name: 'Tier 2',
+    name: 'LOCKED IN',
     spendRequired: 500,
     pointsPerDollar: 1.25,
     pointsExpire: false,
     birthdayTransactions: 1,
     perks: [
-      'Earn points — $1 = 1.25 points',
-      'Points never expire',
-      '2x points on birthday month (1 transaction)',
-      'Member-exclusive discounts, gifts, events & access',
+      { title: 'Earn points', body: '$1 = 1.25 points' },
+      { title: 'Points never expire', body: '' },
+      {
+        title: 'Birthday bonus points',
+        body: '2x rewards on a single transaction on your birthday month',
+      },
+      {
+        title: 'Member exclusive perks',
+        body: 'Promotions, events, gifts & access',
+      },
     ],
-    color: '#7A8B9A',
-    bgColor: '#EEF2F5',
+    color: colors.brown,
+    bgColor: colors.blue,
   },
   {
     tier: 3,
-    name: 'Tier 3',
+    name: 'ALL IN',
     spendRequired: 1250,
     pointsPerDollar: 1.5,
     pointsExpire: false,
     birthdayTransactions: 2,
     perks: [
-      'Earn points — $1 = 1.5 points',
-      'Points never expire',
-      '2x points on birthday month (2 transactions)',
-      'Member-exclusive discounts, gifts, events & access',
+      { title: 'Earn points', body: '$1 = 1.50 points' },
+      { title: 'Points never expire', body: '' },
+      {
+        title: 'Birthday bonus points',
+        body: '2x rewards on up to 2 transactions on your birthday month',
+      },
+      {
+        title: 'Member exclusive perks',
+        body: 'Promotions, events, gifts & access',
+      },
     ],
-    color: '#8B6B3A',
-    bgColor: '#F7F0E2',
+    color: colors.brown,
+    bgColor: colors.peach,
   },
 ];
 
